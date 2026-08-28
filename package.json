@@ -1,0 +1,23 @@
+{
+  "name": "elektronnyj-dnevnik",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "illustrations:convert": "node scripts/convert-illustrations.mjs",
+    "illustrations:validate": "node scripts/validate-illustrations.mjs"
+  },
+  "dependencies": {
+    "vue": "^3.5.41",
+    "vue-router": "^5.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.8",
+    "sass": "^1.103.1",
+    "sharp": "^0.34.3",
+    "vite": "^8.2.2"
+  }
+}
