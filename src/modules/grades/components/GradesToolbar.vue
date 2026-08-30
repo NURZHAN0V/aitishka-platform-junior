@@ -6,6 +6,11 @@ import { PERIOD_TABS } from '../constants/grades.js'
 const props = defineProps({
   period: { type: String, required: true },
   periodLabel: { type: String, required: true },
+  /** Неделя/месяц скрыты на телефоне/узком планшете (max-width 900px). */
+  allowMultiPeriod: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits([
@@ -30,6 +35,7 @@ const navLabels = computed(() => {
   <div class="grades-toolbar">
     <div class="grades-toolbar__row">
       <BaseTabs
+        v-if="allowMultiPeriod"
         :model-value="period"
         :tabs="PERIOD_TABS"
         @update:model-value="emit('update:period', $event)"

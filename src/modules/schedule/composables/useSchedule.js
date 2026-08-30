@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
 import {
   MOCK_LESSONS,
   SCHEDULE_DESKTOP_MQ,
@@ -114,13 +114,18 @@ function saveView(view) {
   }
 }
 
+function matchesDesktopMq() {
+  return typeof window !== 'undefined' && window.matchMedia(SCHEDULE_DESKTOP_MQ).matches
+}
+
 function initialView() {
+  const isDesktop = matchesDesktopMq()
   const stored = readStoredView()
-  if (stored) return stored
-  if (typeof window !== 'undefined' && window.matchMedia(SCHEDULE_DESKTOP_MQ).matches) {
-    return 'week'
+  if (stored) {
+    if (!isDesktop && stored !== 'day') return 'day'
+    return stored
   }
-  return 'day'
+  return isDesktop ? 'week' : 'day'
 }
 
 export function useSchedule(lessons = MOCK_LESSONS) {
@@ -131,7 +136,32 @@ export function useSchedule(lessons = MOCK_LESSONS) {
   const weekStart = ref(startOfWeek(now.value))
   const monthStart = ref(startOfMonth(now.value))
   const view = ref(initialView())
+  const isDesktopSchedule = ref(matchesDesktopMq())
   const expandedLessonId = ref(null)
+
+  function syncDesktopSchedule(matches) {
+    isDesktopSchedule.value = matches
+    if (!matches && view.value !== 'day') {
+      view.value = 'day'
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia(SCHEDULE_DESKTOP_MQ)
+    syncDesktopSchedule(mediaQuery.matches)
+
+    const mediaHandler = (event) => {
+      syncDesktopSchedule(event.matches)
+    }
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', mediaHandler)
+      onScopeDispose(() => mediaQuery.removeEventListener('change', mediaHandler))
+    } else {
+      mediaQuery.addListener(mediaHandler)
+      onScopeDispose(() => mediaQuery.removeListener(mediaHandler))
+    }
+  }
 
   watch(view, (value) => saveView(value))
 
@@ -266,6 +296,7 @@ export function useSchedule(lessons = MOCK_LESSONS) {
 
   function setView(next) {
     if (!VALID_VIEWS.has(next)) return
+    if (!isDesktopSchedule.value && next !== 'day') return
     view.value = next
   }
 
@@ -321,6 +352,7 @@ export function useSchedule(lessons = MOCK_LESSONS) {
 
   return {
     view,
+    isDesktopSchedule,
     expandedLessonId,
     selectedDay,
     weekStart,

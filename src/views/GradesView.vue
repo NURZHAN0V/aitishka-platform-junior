@@ -13,6 +13,7 @@ const mockUser = {
 
 const {
   period,
+  isCompactGrades,
   expandedGradeId,
   periodLabel,
   averageLabel,
@@ -51,6 +52,7 @@ const {
       <GradesToolbar
         :period="period"
         :period-label="periodLabel"
+        :allow-multi-period="!isCompactGrades"
         @update:period="setPeriod"
         @prev-period="goToPrevPeriod"
         @next-period="goToNextPeriod"

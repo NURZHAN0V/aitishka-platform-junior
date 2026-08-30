@@ -1,5 +1,3 @@
-export const RATING_PERIOD_STORAGE_KEY = 'elektronnyj-dnevnik:rating-period'
-
 export const CURRENT_USER_ID = 'alina'
 
 /** Шкала оценок продукта: 2–5 */
@@ -10,11 +8,6 @@ export const GRADE_SCALE_MAX = 5
 export const RATING_GRADES_WEIGHT = 0.5
 
 export const LEADERBOARD_LIMIT = 5
-
-export const PERIOD_TABS = [
-  { id: 'current', label: 'Текущий месяц' },
-  { id: 'all', label: 'Всё время' },
-]
 
 /** Якорь «сегодня» — как у оценок, август 2026 (месяц в UI не показываем) */
 export const RATING_TODAY = new Date(2026, 7, 30)
@@ -196,30 +189,22 @@ export function rankStudents(students) {
     .map((row, index) => ({ ...row, rank: index + 1 }))
 }
 
-export function getMonthRanking(monthKey) {
-  return rankStudents(MOCK_RATING_BY_MONTH[monthKey] ?? [])
-}
-
 export function getAllTimeRanking() {
   return rankStudents(aggregateAllMonths())
 }
 
-export function getRankingForPeriod(periodId) {
-  return periodId === 'all' ? getAllTimeRanking() : getMonthRanking(CURRENT_MONTH_KEY)
-}
-
-const currentRanking = getMonthRanking(CURRENT_MONTH_KEY)
-const currentUserRow = currentRanking.find((row) => row.isCurrent)
+const allTimeRanking = getAllTimeRanking()
+const currentUserRow = allTimeRanking.find((row) => row.isCurrent)
 
 /** Снимок для виджета на главной — те же баллы, что на странице /rating */
 export const RATING_WIDGET_SNAPSHOT = {
   rank: currentUserRow?.rank ?? 0,
-  total: currentRanking.length,
+  total: allTimeRanking.length,
   points: currentUserRow?.points ?? 0,
-  periodLabel: 'За текущий месяц',
+  periodLabel: 'За всё время',
   gradesPercent: Math.round(RATING_GRADES_WEIGHT * 100),
   homeworkPercent: Math.round((1 - RATING_GRADES_WEIGHT) * 100),
-  leaderboard: currentRanking.slice(0, LEADERBOARD_LIMIT).map((row) => ({
+  leaderboard: allTimeRanking.slice(0, LEADERBOARD_LIMIT).map((row) => ({
     rank: row.rank,
     name: row.shortName,
     points: row.points,
@@ -230,7 +215,4 @@ export const RATING_WIDGET_SNAPSHOT = {
 }
 
 export const FORMULA_TOOLTIP =
-  '50% средний балл (шкала 2–5) + 50% ДЗ вовремя и зачтённые. Пересчёт каждый день; в новом месяце счётчики обнуляются.'
-
-export const FORMULA_TOOLTIP_ALL_TIME =
-  '50% средний балл (шкала 2–5) + 50% ДЗ вовремя и зачтённые за всё время обучения.'
+  '50% средний балл (шкала 2–5) + 50% ДЗ вовремя и зачтённые за всё время обучения. Пересчёт каждый день.'

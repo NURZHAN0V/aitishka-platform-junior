@@ -5,7 +5,7 @@ import ExamCard from './ExamCard.vue'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
-  isEmptyPeriod: { type: Boolean, default: false },
+  isEmpty: { type: Boolean, default: false },
   isEmptyFilter: { type: Boolean, default: false },
 })
 
@@ -13,20 +13,20 @@ defineEmits(['download', 'upload', 'view-work'])
 
 const emptyTitle = computed(() => {
   if (props.isEmptyFilter) return 'Нет экзаменов по выбранным фильтрам'
-  return 'За этот период экзаменов нет'
+  return 'Экзаменов пока нет'
 })
 
 const emptyHint = computed(() => {
   if (props.isEmptyFilter) {
-    return 'Сбросьте предмет или статус — или откройте «Весь период обучения».'
+    return 'Сбросьте предмет или статус, чтобы увидеть все экзамены.'
   }
-  return 'Попробуйте соседний месяц или весь период обучения.'
+  return 'Когда появятся экзамены, они отобразятся здесь.'
 })
 </script>
 
 <template>
   <section class="exams-list" aria-label="Список экзаменов">
-    <BaseCard v-if="isEmptyPeriod || isEmptyFilter" padding="md" class="exams-list__empty">
+    <BaseCard v-if="isEmpty || isEmptyFilter" padding="md" class="exams-list__empty">
       <p class="exams-list__empty-title">{{ emptyTitle }}</p>
       <p class="exams-list__empty-hint">{{ emptyHint }}</p>
     </BaseCard>

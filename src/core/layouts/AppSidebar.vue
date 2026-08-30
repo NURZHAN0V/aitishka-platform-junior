@@ -321,7 +321,7 @@ function scheduleHideFlyout() {
         <img
           v-show="!effectiveCollapsed || !sidebarHovered"
           :src="campLogo"
-          alt="IT ШКОЛА Сочи"
+          alt="IT CAMP Гимназия №16"
           width="44"
           height="44"
           class="app-sidebar__logo-icon"
@@ -347,8 +347,8 @@ function scheduleHideFlyout() {
       </div>
 
       <div v-show="!effectiveCollapsed" class="app-sidebar__title">
-        <span class="app-sidebar__title-main">IT ШКОЛА</span>
-        <span class="app-sidebar__title-sub">Сочи</span>
+        <span class="app-sidebar__title-main">IT CAMP</span>
+        <span class="app-sidebar__title-sub">Гимназия №16</span>
       </div>
 
       <button

@@ -1,13 +1,9 @@
 <script setup>
-import { BaseIcon, BaseTabs, BaseTooltip } from '@/core/components/ui'
-import { PERIOD_TABS } from '../constants/rating.js'
+import { BaseIcon, BaseTooltip } from '@/core/components/ui'
 
 defineProps({
-  period: { type: String, required: true },
   formulaTooltip: { type: String, required: true },
 })
-
-defineEmits(['update:period'])
 </script>
 
 <template>
@@ -20,12 +16,6 @@ defineEmits(['update:period'])
         </button>
       </BaseTooltip>
     </div>
-
-    <BaseTabs
-      :model-value="period"
-      :tabs="PERIOD_TABS"
-      @update:model-value="$emit('update:period', $event)"
-    />
   </div>
 </template>
 

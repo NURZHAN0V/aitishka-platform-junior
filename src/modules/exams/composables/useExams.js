@@ -1,22 +1,13 @@
-import { computed, ref, watch } from 'vue'
-import {
-  addMonths,
-  formatMonthYear,
-  isSameDay,
-  isSameMonth,
-  startOfDay,
-} from '@/modules/schedule/composables/useSchedule.js'
+import { computed, ref } from 'vue'
+import { isSameDay, startOfDay } from '@/modules/schedule/composables/useSchedule.js'
 import {
   EXAM_STATUSES,
-  EXAMS_PERIOD_STORAGE_KEY,
   GRADE_SCALE,
   MOCK_EXAMS,
-  PERIOD_TABS,
   STATUS_FILTERS,
   SUBJECT_LABELS,
 } from '../constants/exams.js'
 
-const VALID_PERIODS = new Set(PERIOD_TABS.map((tab) => tab.id))
 const VALID_STATUS_FILTERS = new Set(STATUS_FILTERS.map((item) => item.id))
 
 function cloneItem(item) {
@@ -27,24 +18,6 @@ function cloneItem(item) {
 }
 
 const examItems = ref(MOCK_EXAMS.map(cloneItem))
-
-function readStored(key, validSet, fallback) {
-  try {
-    const value = localStorage.getItem(key)
-    if (validSet.has(value)) return value
-  } catch {
-    // ignore
-  }
-  return fallback
-}
-
-function saveStored(key, value) {
-  try {
-    localStorage.setItem(key, value)
-  } catch {
-    // ignore
-  }
-}
 
 function pluralRu(n, one, few, many) {
   const abs = Math.abs(n) % 100
@@ -203,21 +176,10 @@ function downloadBlob(filename, text) {
 
 export function useExams(sourceItems = examItems) {
   const now = ref(new Date())
-  const period = ref(readStored(EXAMS_PERIOD_STORAGE_KEY, VALID_PERIODS, 'month'))
   const viewMode = ref('detailed')
-  const anchorDate = ref(startOfDay(now.value))
   const subjectFilter = ref('all')
   const statusFilter = ref('all')
   const uploadTargetId = ref(null)
-
-  watch(period, (value) => saveStored(EXAMS_PERIOD_STORAGE_KEY, value))
-
-  function inSelectedPeriod(item) {
-    if (period.value === 'all') return true
-    const deadline = new Date(item.deadline)
-    const review = new Date(item.reviewDate)
-    return isSameMonth(deadline, anchorDate.value) || isSameMonth(review, anchorDate.value)
-  }
 
   const allItems = computed(() =>
     sourceItems.value.map((item) => {
@@ -226,21 +188,16 @@ export function useExams(sourceItems = examItems) {
     }),
   )
 
-  const periodItems = computed(() =>
+  const scopedItems = computed(() =>
     allItems.value.filter((item) => {
       if (subjectFilter.value !== 'all' && item.subject !== subjectFilter.value) return false
-      return inSelectedPeriod(item)
+      return true
     }),
   )
 
-  const periodLabel = computed(() => {
-    if (period.value === 'all') return 'Весь период обучения'
-    return formatMonthYear(anchorDate.value)
-  })
-
   const statusCounts = computed(() => {
     const counts = { all: 0, awaiting: 0, uploaded: 0, checked: 0, missed: 0 }
-    periodItems.value.forEach((item) => {
+    scopedItems.value.forEach((item) => {
       counts.all += 1
       counts[item.status] += 1
     })
@@ -300,7 +257,7 @@ export function useExams(sourceItems = examItems) {
   }
 
   const filteredItems = computed(() => {
-    const list = periodItems.value.filter((item) => {
+    const list = scopedItems.value.filter((item) => {
       if (statusFilter.value === 'all') return true
       return item.status === statusFilter.value
     })
@@ -314,25 +271,15 @@ export function useExams(sourceItems = examItems) {
       })
   })
 
-  const isEmptyPeriod = computed(() => {
-    const unfiltered = allItems.value.filter((item) => inSelectedPeriod(item))
-    return unfiltered.length === 0
-  })
+  const isEmpty = computed(() => allItems.value.length === 0)
 
-  const isEmptyFilter = computed(
-    () => !isEmptyPeriod.value && filteredItems.value.length === 0,
-  )
+  const isEmptyFilter = computed(() => !isEmpty.value && filteredItems.value.length === 0)
 
   const uploadTarget = computed(() => {
     if (!uploadTargetId.value) return null
     const item = allItems.value.find((row) => row.id === uploadTargetId.value)
     return item ? enrichItem(item) : null
   })
-
-  function setPeriod(next) {
-    if (!VALID_PERIODS.has(next)) return
-    period.value = next
-  }
 
   function setSubjectFilter(value) {
     subjectFilter.value = value
@@ -341,21 +288,6 @@ export function useExams(sourceItems = examItems) {
   function setStatusFilter(next) {
     if (!VALID_STATUS_FILTERS.has(next)) return
     statusFilter.value = next
-  }
-
-  function goToPrevPeriod() {
-    if (period.value !== 'month') return
-    anchorDate.value = addMonths(anchorDate.value, -1)
-  }
-
-  function goToNextPeriod() {
-    if (period.value !== 'month') return
-    anchorDate.value = addMonths(anchorDate.value, 1)
-  }
-
-  function goToCurrentPeriod() {
-    now.value = new Date()
-    anchorDate.value = startOfDay(now.value)
   }
 
   function openUpload(id) {
@@ -414,22 +346,16 @@ export function useExams(sourceItems = examItems) {
   }
 
   return {
-    period,
     viewMode,
     subjectFilter,
     statusFilter,
-    periodLabel,
     statusTabs,
     filteredItems,
-    isEmptyPeriod,
+    isEmpty,
     isEmptyFilter,
     uploadTarget,
-    setPeriod,
     setSubjectFilter,
     setStatusFilter,
-    goToPrevPeriod,
-    goToNextPeriod,
-    goToCurrentPeriod,
     openUpload,
     closeUpload,
     submitWork,

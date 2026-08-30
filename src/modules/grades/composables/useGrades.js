@@ -1,4 +1,5 @@
-import { computed, ref, watch } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
+import { APP_SHELL_TABLET_MQ } from '@/core/composables/useAppShell.js'
 import {
   addDays,
   addMonths,
@@ -50,6 +51,15 @@ function saveStored(key, value) {
   }
 }
 
+function isCompactViewport() {
+  return typeof window !== 'undefined' && window.matchMedia(APP_SHELL_TABLET_MQ).matches
+}
+
+function initialPeriod() {
+  if (isCompactViewport()) return 'day'
+  return readStored(GRADES_PERIOD_STORAGE_KEY, VALID_PERIODS, 'month')
+}
+
 function inPeriod(date, period, anchor) {
   if (period === 'day') return isSameDay(date, anchor)
   if (period === 'week') {
@@ -96,10 +106,35 @@ function formatGradeDateShort(iso) {
 }
 
 export function useGrades(gradesSource = MOCK_GRADES) {
-  const period = ref(readStored(GRADES_PERIOD_STORAGE_KEY, VALID_PERIODS, 'month'))
+  const period = ref(initialPeriod())
   const viewMode = ref('detailed')
   const anchorDate = ref(startOfDay(new Date(2026, 7, 30)))
   const expandedGradeId = ref(null)
+  const isCompactGrades = ref(isCompactViewport())
+
+  function syncCompactGrades(matches) {
+    isCompactGrades.value = matches
+    if (matches && period.value !== 'day') {
+      period.value = 'day'
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia(APP_SHELL_TABLET_MQ)
+    syncCompactGrades(mediaQuery.matches)
+
+    const mediaHandler = (event) => {
+      syncCompactGrades(event.matches)
+    }
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', mediaHandler)
+      onScopeDispose(() => mediaQuery.removeEventListener('change', mediaHandler))
+    } else {
+      mediaQuery.addListener(mediaHandler)
+      onScopeDispose(() => mediaQuery.removeListener(mediaHandler))
+    }
+  }
 
   watch(period, (value) => saveStored(GRADES_PERIOD_STORAGE_KEY, value))
 
@@ -242,6 +277,7 @@ export function useGrades(gradesSource = MOCK_GRADES) {
 
   function setPeriod(next) {
     if (!VALID_PERIODS.has(next)) return
+    if (isCompactGrades.value && next !== 'day') return
     period.value = next
     expandedGradeId.value = null
   }
@@ -274,6 +310,7 @@ export function useGrades(gradesSource = MOCK_GRADES) {
 
   return {
     period,
+    isCompactGrades,
     viewMode,
     anchorDate,
     expandedGradeId,

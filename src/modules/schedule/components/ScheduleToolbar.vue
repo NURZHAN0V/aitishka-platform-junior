@@ -11,6 +11,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  /** Неделя/месяц только на широком экране (SCHEDULE_DESKTOP_MQ). */
+  allowMultiView: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 defineEmits(['update:view', 'prev-period', 'next-period', 'go-today'])
@@ -36,6 +41,7 @@ const navLabels = computed(() => {
   <div class="schedule-toolbar">
     <div class="schedule-toolbar__row">
       <BaseTabs
+        v-if="allowMultiView"
         :model-value="view"
         :tabs="viewTabs"
         @update:model-value="$emit('update:view', $event)"

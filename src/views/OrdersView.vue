@@ -1,7 +1,6 @@
 <script setup>
 import AppLayout from '@/core/layouts/AppLayout.vue'
 import { useMarket } from '@/modules/market/composables/useMarket.js'
-import OrdersToolbar from '@/modules/market/components/OrdersToolbar.vue'
 import OrdersList from '@/modules/market/components/OrdersList.vue'
 
 const mockUser = {
@@ -24,7 +23,6 @@ const { allOrders, isOrdersEmpty } = useMarket()
     active-route="orders"
   >
     <div class="orders-view">
-      <OrdersToolbar />
       <OrdersList :orders="allOrders" :is-empty="isOrdersEmpty" />
     </div>
   </AppLayout>

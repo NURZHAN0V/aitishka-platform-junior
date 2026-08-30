@@ -3,14 +3,12 @@ import { GRADE_SCALE } from '@/modules/grades/constants/grades.js'
 
 export { SUBJECT_LABELS, GRADE_SCALE }
 
-export const EXAMS_PERIOD_STORAGE_KEY = 'elektronnyj-dnevnik:exams-period'
-
 export const EXAM_STATUSES = {
   all: {
     id: 'all',
     label: 'Все',
     chip: 'missing',
-    tooltip: 'Все экзамены выбранного периода',
+    tooltip: 'Все экзамены за весь период обучения',
   },
   awaiting: {
     id: 'awaiting',
@@ -44,11 +42,6 @@ export const STATUS_FILTERS = [
   EXAM_STATUSES.uploaded,
   EXAM_STATUSES.checked,
   EXAM_STATUSES.missed,
-]
-
-export const PERIOD_TABS = [
-  { id: 'month', label: 'Месяц' },
-  { id: 'all', label: 'Весь период' },
 ]
 
 export const SUBJECT_OPTIONS = [

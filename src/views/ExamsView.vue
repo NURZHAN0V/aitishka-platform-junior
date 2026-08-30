@@ -16,21 +16,15 @@ const mockUser = {
 const toast = useToast()
 
 const {
-  period,
   subjectFilter,
   statusFilter,
-  periodLabel,
   statusTabs,
   filteredItems,
-  isEmptyPeriod,
+  isEmpty,
   isEmptyFilter,
   uploadTarget,
-  setPeriod,
   setSubjectFilter,
   setStatusFilter,
-  goToPrevPeriod,
-  goToNextPeriod,
-  goToCurrentPeriod,
   openUpload,
   closeUpload,
   submitWork,
@@ -72,22 +66,16 @@ function onViewWork(item) {
   >
     <div class="exams-view">
       <ExamsToolbar
-        :period="period"
-        :period-label="periodLabel"
         :subject-filter="subjectFilter"
         :status-filter="statusFilter"
         :status-tabs="statusTabs"
-        @update:period="setPeriod"
         @update:subject-filter="setSubjectFilter"
         @update:status-filter="setStatusFilter"
-        @prev-period="goToPrevPeriod"
-        @next-period="goToNextPeriod"
-        @go-current="goToCurrentPeriod"
       />
 
       <ExamsList
         :items="filteredItems"
-        :is-empty-period="isEmptyPeriod"
+        :is-empty="isEmpty"
         :is-empty-filter="isEmptyFilter"
         @download="onDownload"
         @upload="openUpload"

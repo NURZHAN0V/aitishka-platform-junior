@@ -14,6 +14,7 @@ const mockUser = {
 
 const {
   view,
+  isDesktopSchedule,
   expandedLessonId,
   periodLabel,
   daysWithLessons,
@@ -42,6 +43,7 @@ const {
       <ScheduleToolbar
         :view="view"
         :period-label="periodLabel"
+        :allow-multi-view="isDesktopSchedule"
         @update:view="setView"
         @prev-period="goToPrevPeriod"
         @next-period="goToNextPeriod"

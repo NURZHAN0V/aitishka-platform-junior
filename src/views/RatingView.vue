@@ -10,7 +10,7 @@ const mockUser = {
   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alina',
 }
 
-const { period, rankedStudents, formulaTooltip, setPeriod } = useRating()
+const { rankedStudents, formulaTooltip } = useRating()
 </script>
 
 <template>
@@ -21,11 +21,7 @@ const { period, rankedStudents, formulaTooltip, setPeriod } = useRating()
     active-route="rating"
   >
     <div class="rating-view">
-      <RatingToolbar
-        :period="period"
-        :formula-tooltip="formulaTooltip"
-        @update:period="setPeriod"
-      />
+      <RatingToolbar :formula-tooltip="formulaTooltip" />
 
       <RatingTable :rows="rankedStudents" />
     </div>
