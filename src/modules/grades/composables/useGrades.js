@@ -15,19 +15,22 @@ import {
   GRADE_SCALE,
   GRADE_STATUS,
   GRADES_PERIOD_STORAGE_KEY,
-  GRADES_VIEW_STORAGE_KEY,
   HOMEWORK_FIVE_COINS,
   MOCK_GRADES,
   MOCK_HOMEWORK_ON_TIME_RATIO,
   PERIOD_TABS,
   RATING_GRADES_WEIGHT,
-  SUBJECT_LABELS,
-  VIEW_TABS,
   WORK_TYPES,
 } from '../constants/grades.js'
 
 const VALID_PERIODS = new Set(PERIOD_TABS.map((tab) => tab.id))
-const VALID_VIEWS = new Set(VIEW_TABS.map((tab) => tab.id))
+const GRADES_VIEW_STORAGE_KEY_LEGACY = 'elektronnyj-dnevnik:grades-view'
+
+try {
+  localStorage.removeItem(GRADES_VIEW_STORAGE_KEY_LEGACY)
+} catch {
+  // ignore
+}
 
 function readStored(key, validSet, fallback) {
   try {
@@ -94,14 +97,11 @@ function formatGradeDateShort(iso) {
 
 export function useGrades(gradesSource = MOCK_GRADES) {
   const period = ref(readStored(GRADES_PERIOD_STORAGE_KEY, VALID_PERIODS, 'month'))
-  const viewMode = ref(readStored(GRADES_VIEW_STORAGE_KEY, VALID_VIEWS, 'summary'))
+  const viewMode = ref('detailed')
   const anchorDate = ref(startOfDay(new Date(2026, 7, 30)))
-  const subjectFilter = ref('all')
-  const workTypeFilter = ref('all')
   const expandedGradeId = ref(null)
 
   watch(period, (value) => saveStored(GRADES_PERIOD_STORAGE_KEY, value))
-  watch(viewMode, (value) => saveStored(GRADES_VIEW_STORAGE_KEY, value))
 
   const allGrades = computed(() =>
     [...gradesSource].sort((a, b) => new Date(b.date) - new Date(a.date)),
@@ -111,13 +111,7 @@ export function useGrades(gradesSource = MOCK_GRADES) {
     allGrades.value.filter((grade) => inPeriod(new Date(grade.date), period.value, anchorDate.value)),
   )
 
-  const filteredGrades = computed(() =>
-    periodGrades.value.filter((grade) => {
-      if (subjectFilter.value !== 'all' && grade.subject !== subjectFilter.value) return false
-      if (workTypeFilter.value !== 'all' && grade.workType !== workTypeFilter.value) return false
-      return true
-    }),
-  )
+  const filteredGrades = periodGrades
 
   const periodLabel = computed(() => {
     if (period.value === 'day') return formatDayMonthYear(anchorDate.value)
@@ -202,35 +196,6 @@ export function useGrades(gradesSource = MOCK_GRADES) {
     }
   }
 
-  const subjectSummaries = computed(() => {
-    const map = new Map()
-
-    filteredGrades.value.forEach((grade) => {
-      if (!map.has(grade.subject)) {
-        map.set(grade.subject, {
-          subject: grade.subject,
-          title: SUBJECT_LABELS[grade.subject] || grade.title,
-          grades: [],
-        })
-      }
-      map.get(grade.subject).grades.push(grade)
-    })
-
-    return [...map.values()]
-      .map((row) => {
-        const avg = averageScores(row.grades)
-        return {
-          ...row,
-          count: row.grades.length,
-          average: avg,
-          averageLabel: formatAverage(avg),
-          tone: scoreTone(avg == null ? null : Math.round(avg)),
-          latest: enrichGrade(row.grades[0]),
-        }
-      })
-      .sort((a, b) => a.title.localeCompare(b.title, 'ru'))
-  })
-
   const homeworkFivesInPeriod = computed(() =>
     filteredGrades.value.filter(
       (g) => g.workType === 'homework' && g.score === 5 && (g.coinsEarned ?? 0) > 0,
@@ -274,29 +239,10 @@ export function useGrades(gradesSource = MOCK_GRADES) {
   }))
 
   const isEmptyPeriod = computed(() => periodGrades.value.length === 0)
-  const isEmptyFilter = computed(
-    () => periodGrades.value.length > 0 && filteredGrades.value.length === 0,
-  )
 
   function setPeriod(next) {
     if (!VALID_PERIODS.has(next)) return
     period.value = next
-    expandedGradeId.value = null
-  }
-
-  function setViewMode(next) {
-    if (!VALID_VIEWS.has(next)) return
-    viewMode.value = next
-    expandedGradeId.value = null
-  }
-
-  function setSubjectFilter(value) {
-    subjectFilter.value = value
-    expandedGradeId.value = null
-  }
-
-  function setWorkTypeFilter(value) {
-    workTypeFilter.value = value
     expandedGradeId.value = null
   }
 
@@ -330,8 +276,6 @@ export function useGrades(gradesSource = MOCK_GRADES) {
     period,
     viewMode,
     anchorDate,
-    subjectFilter,
-    workTypeFilter,
     expandedGradeId,
     periodLabel,
     averageGrade,
@@ -341,15 +285,10 @@ export function useGrades(gradesSource = MOCK_GRADES) {
     dynamicsPoints,
     recentGrades: enrichedRecentGrades,
     filteredGrades: enrichedFilteredGrades,
-    subjectSummaries,
     motivation,
     counts,
     isEmptyPeriod,
-    isEmptyFilter,
     setPeriod,
-    setViewMode,
-    setSubjectFilter,
-    setWorkTypeFilter,
     goToPrevPeriod,
     goToNextPeriod,
     goToCurrentPeriod,

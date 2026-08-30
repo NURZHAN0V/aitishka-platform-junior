@@ -13,9 +13,6 @@ const mockUser = {
 
 const {
   period,
-  viewMode,
-  subjectFilter,
-  workTypeFilter,
   expandedGradeId,
   periodLabel,
   averageLabel,
@@ -23,14 +20,9 @@ const {
   averageQualitative,
   dynamicsPoints,
   filteredGrades,
-  subjectSummaries,
   counts,
   isEmptyPeriod,
-  isEmptyFilter,
   setPeriod,
-  setViewMode,
-  setSubjectFilter,
-  setWorkTypeFilter,
   goToPrevPeriod,
   goToNextPeriod,
   goToCurrentPeriod,
@@ -58,26 +50,17 @@ const {
 
       <GradesToolbar
         :period="period"
-        :view-mode="viewMode"
         :period-label="periodLabel"
-        :subject-filter="subjectFilter"
-        :work-type-filter="workTypeFilter"
         @update:period="setPeriod"
-        @update:view-mode="setViewMode"
-        @update:subject-filter="setSubjectFilter"
-        @update:work-type-filter="setWorkTypeFilter"
         @prev-period="goToPrevPeriod"
         @next-period="goToNextPeriod"
         @go-current="goToCurrentPeriod"
       />
 
       <GradesList
-        :view-mode="viewMode"
         :grades="filteredGrades"
-        :subject-summaries="subjectSummaries"
         :expanded-grade-id="expandedGradeId"
         :is-empty-period="isEmptyPeriod"
-        :is-empty-filter="isEmptyFilter"
         @toggle-grade="toggleGrade"
       />
     </div>

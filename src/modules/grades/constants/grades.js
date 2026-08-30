@@ -2,7 +2,6 @@ import { SUBJECT_LABELS } from '@/modules/schedule/constants/lessons.js'
 
 export { SUBJECT_LABELS }
 
-export const GRADES_VIEW_STORAGE_KEY = 'elektronnyj-dnevnik:grades-view'
 export const GRADES_PERIOD_STORAGE_KEY = 'elektronnyj-dnevnik:grades-period'
 
 /** Шкала оценок продукта: 2–5 */
@@ -20,25 +19,10 @@ export const WORK_TYPES = {
   control: { id: 'control', label: 'Контрольная' },
 }
 
-export const WORK_TYPE_OPTIONS = [
-  { value: 'all', label: 'Все типы работ' },
-  ...Object.values(WORK_TYPES).map((item) => ({ value: item.id, label: item.label })),
-]
-
-export const SUBJECT_OPTIONS = [
-  { value: 'all', label: 'Все предметы' },
-  ...Object.entries(SUBJECT_LABELS).map(([value, label]) => ({ value, label })),
-]
-
 export const PERIOD_TABS = [
   { id: 'day', label: 'День' },
   { id: 'week', label: 'Неделя' },
   { id: 'month', label: 'Месяц' },
-]
-
-export const VIEW_TABS = [
-  { id: 'summary', label: 'Сводный' },
-  { id: 'detailed', label: 'Детализированный' },
 ]
 
 /**

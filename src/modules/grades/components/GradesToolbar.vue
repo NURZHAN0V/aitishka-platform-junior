@@ -1,32 +1,15 @@
 <script setup>
 import { computed } from 'vue'
-import {
-  BaseButton,
-  BaseIcon,
-  BaseSelect,
-  BaseTabs,
-  BaseTooltip,
-} from '@/core/components/ui'
-import {
-  PERIOD_TABS,
-  SUBJECT_OPTIONS,
-  VIEW_TABS,
-  WORK_TYPE_OPTIONS,
-} from '../constants/grades.js'
+import { BaseButton, BaseIcon, BaseTabs } from '@/core/components/ui'
+import { PERIOD_TABS } from '../constants/grades.js'
 
 const props = defineProps({
   period: { type: String, required: true },
-  viewMode: { type: String, required: true },
   periodLabel: { type: String, required: true },
-  subjectFilter: { type: String, required: true },
-  workTypeFilter: { type: String, required: true },
 })
 
 const emit = defineEmits([
   'update:period',
-  'update:viewMode',
-  'update:subjectFilter',
-  'update:workTypeFilter',
   'prev-period',
   'next-period',
   'go-current',
@@ -46,75 +29,39 @@ const navLabels = computed(() => {
 <template>
   <div class="grades-toolbar">
     <div class="grades-toolbar__row">
-      <div class="grades-toolbar__period-block">
-        <BaseTabs
-          :model-value="period"
-          :tabs="PERIOD_TABS"
-          @update:model-value="emit('update:period', $event)"
-        />
+      <BaseTabs
+        :model-value="period"
+        :tabs="PERIOD_TABS"
+        @update:model-value="emit('update:period', $event)"
+      />
 
-        <div class="grades-toolbar__period">
-          <BaseTooltip :text="navLabels.prev" placement="bottom">
-            <button
-              type="button"
-              class="grades-toolbar__nav-btn"
-              :aria-label="navLabels.prev"
-              @click="emit('prev-period')"
-            >
-              <BaseIcon name="chevron-left" :size="18" />
-            </button>
-          </BaseTooltip>
+      <div class="grades-toolbar__period">
+        <button
+          type="button"
+          class="grades-toolbar__nav-btn"
+          :aria-label="navLabels.prev"
+          @click="emit('prev-period')"
+        >
+          <BaseIcon name="chevron-left" :size="18" />
+        </button>
 
-          <span class="grades-toolbar__period-label">
-            <BaseIcon name="calendar-03" :size="18" />
-            {{ periodLabel }}
-          </span>
+        <span class="grades-toolbar__period-label">
+          <BaseIcon name="calendar-03" :size="18" />
+          {{ periodLabel }}
+        </span>
 
-          <BaseTooltip :text="navLabels.next" placement="bottom">
-            <button
-              type="button"
-              class="grades-toolbar__nav-btn"
-              :aria-label="navLabels.next"
-              @click="emit('next-period')"
-            >
-              <BaseIcon name="chevron-right" :size="18" />
-            </button>
-          </BaseTooltip>
+        <button
+          type="button"
+          class="grades-toolbar__nav-btn"
+          :aria-label="navLabels.next"
+          @click="emit('next-period')"
+        >
+          <BaseIcon name="chevron-right" :size="18" />
+        </button>
 
-          <BaseButton variant="secondary" size="sm" @click="emit('go-current')">
-            {{ navLabels.current }}
-          </BaseButton>
-        </div>
-      </div>
-
-      <div class="grades-toolbar__view">
-        <BaseTabs
-          :model-value="viewMode"
-          :tabs="VIEW_TABS"
-          size="sm"
-          @update:model-value="emit('update:viewMode', $event)"
-        />
-      </div>
-    </div>
-
-    <div class="grades-toolbar__filters">
-      <div class="grades-toolbar__filter">
-        <div class="grades-toolbar__filter-label">Предмет</div>
-        <BaseSelect
-          :model-value="subjectFilter"
-          :options="SUBJECT_OPTIONS"
-          id="grades-subject-filter"
-          @update:model-value="emit('update:subjectFilter', $event)"
-        />
-      </div>
-      <div class="grades-toolbar__filter">
-        <div class="grades-toolbar__filter-label">Тип работы</div>
-        <BaseSelect
-          :model-value="workTypeFilter"
-          :options="WORK_TYPE_OPTIONS"
-          id="grades-work-type-filter"
-          @update:model-value="emit('update:workTypeFilter', $event)"
-        />
+        <BaseButton variant="secondary" size="sm" @click="emit('go-current')">
+          {{ navLabels.current }}
+        </BaseButton>
       </div>
     </div>
   </div>
@@ -137,13 +84,6 @@ const navLabels = computed(() => {
     gap: $space-4;
   }
 
-  &__period-block {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: $space-4;
-  }
-
   &__period {
     display: flex;
     flex-wrap: nowrap;
@@ -151,21 +91,28 @@ const navLabels = computed(() => {
     gap: $space-1;
     height: 36px;
 
-    :deep(.base-tooltip) {
-      display: inline-flex;
+    :deep(.base-button--sm) {
+      height: 36px;
+      min-height: 36px;
+      box-sizing: border-box;
     }
   }
 
   &__nav-btn {
     @include flex-center;
+
+    box-sizing: border-box;
     width: 36px;
     height: 36px;
+    padding: 0;
     border: 1px solid $color-border;
     border-radius: $radius-md;
     background-color: $color-bg-card;
     color: $color-text-secondary;
     cursor: pointer;
-    transition: border-color $transition-base, color $transition-base, background-color $transition-base;
+    @include press-scale(0.94);
+    transition: transform $transition-press, border-color $transition-base, color $transition-base,
+      background-color $transition-base;
 
     &:hover {
       border-color: $color-primary-muted;
@@ -181,50 +128,37 @@ const navLabels = computed(() => {
   &__period-label {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: $space-2;
-    min-width: 7.5rem;
-    padding: 0 $space-2;
+    height: 100%;
+    padding-inline: $space-1;
     font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
+    line-height: 1;
     color: $color-text-primary;
     white-space: nowrap;
-  }
 
-  &__view {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-2;
-  }
-
-  &__filters {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 220px));
-    gap: $space-4;
-  }
-
-  &__filter {
-    display: flex;
-    flex-direction: column;
-    gap: $space-2;
-    min-width: 0;
-  }
-
-  &__filter-label {
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    :deep(.base-icon) {
+      display: block;
+      flex-shrink: 0;
+      line-height: 0;
+    }
   }
 }
 
 @media (max-width: 720px) {
-  .grades-toolbar__filters {
-    grid-template-columns: 1fr;
-  }
-
   .grades-toolbar__period {
     width: 100%;
     flex-wrap: wrap;
     height: auto;
+    row-gap: $space-2;
+  }
+
+  .grades-toolbar__period-label {
+    order: -1;
+    width: 100%;
+    height: 36px;
+    justify-content: center;
   }
 }
 </style>
