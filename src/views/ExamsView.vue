@@ -17,24 +17,20 @@ const toast = useToast()
 
 const {
   period,
-  viewMode,
   subjectFilter,
   statusFilter,
   periodLabel,
   statusTabs,
   filteredItems,
-  subjectSummaries,
   isEmptyPeriod,
   isEmptyFilter,
   uploadTarget,
   setPeriod,
-  setViewMode,
   setSubjectFilter,
   setStatusFilter,
   goToPrevPeriod,
   goToNextPeriod,
   goToCurrentPeriod,
-  openSubject,
   openUpload,
   closeUpload,
   submitWork,
@@ -77,13 +73,11 @@ function onViewWork(item) {
     <div class="exams-view">
       <ExamsToolbar
         :period="period"
-        :view-mode="viewMode"
         :period-label="periodLabel"
         :subject-filter="subjectFilter"
         :status-filter="statusFilter"
         :status-tabs="statusTabs"
         @update:period="setPeriod"
-        @update:view-mode="setViewMode"
         @update:subject-filter="setSubjectFilter"
         @update:status-filter="setStatusFilter"
         @prev-period="goToPrevPeriod"
@@ -92,15 +86,12 @@ function onViewWork(item) {
       />
 
       <ExamsList
-        :view-mode="viewMode"
         :items="filteredItems"
-        :subject-summaries="subjectSummaries"
         :is-empty-period="isEmptyPeriod"
         :is-empty-filter="isEmptyFilter"
         @download="onDownload"
         @upload="openUpload"
         @view-work="onViewWork"
-        @open-subject="openSubject"
       />
 
       <ExamUploadModal

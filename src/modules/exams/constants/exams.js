@@ -3,9 +3,7 @@ import { GRADE_SCALE } from '@/modules/grades/constants/grades.js'
 
 export { SUBJECT_LABELS, GRADE_SCALE }
 
-export const EXAMS_VIEW_STORAGE_KEY = 'elektronnyj-dnevnik:exams-view'
 export const EXAMS_PERIOD_STORAGE_KEY = 'elektronnyj-dnevnik:exams-period'
-export const EXAMS_DESKTOP_MQ = '(min-width: 1281px)'
 
 export const EXAM_STATUSES = {
   all: {
@@ -51,11 +49,6 @@ export const STATUS_FILTERS = [
 export const PERIOD_TABS = [
   { id: 'month', label: 'Месяц' },
   { id: 'all', label: 'Весь период' },
-]
-
-export const VIEW_TABS = [
-  { id: 'summary', label: 'Сводный' },
-  { id: 'detailed', label: 'Детализированный' },
 ]
 
 export const SUBJECT_OPTIONS = [

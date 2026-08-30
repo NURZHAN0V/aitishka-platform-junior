@@ -8,19 +8,15 @@ import {
 } from '@/modules/schedule/composables/useSchedule.js'
 import {
   EXAM_STATUSES,
-  EXAMS_DESKTOP_MQ,
   EXAMS_PERIOD_STORAGE_KEY,
-  EXAMS_VIEW_STORAGE_KEY,
   GRADE_SCALE,
   MOCK_EXAMS,
   PERIOD_TABS,
   STATUS_FILTERS,
   SUBJECT_LABELS,
-  VIEW_TABS,
 } from '../constants/exams.js'
 
 const VALID_PERIODS = new Set(PERIOD_TABS.map((tab) => tab.id))
-const VALID_VIEWS = new Set(VIEW_TABS.map((tab) => tab.id))
 const VALID_STATUS_FILTERS = new Set(STATUS_FILTERS.map((item) => item.id))
 
 function cloneItem(item) {
@@ -50,15 +46,6 @@ function saveStored(key, value) {
   }
 }
 
-function initialView() {
-  const stored = readStored(EXAMS_VIEW_STORAGE_KEY, VALID_VIEWS, null)
-  if (stored) return stored
-  if (typeof window !== 'undefined' && window.matchMedia(EXAMS_DESKTOP_MQ).matches) {
-    return 'summary'
-  }
-  return 'detailed'
-}
-
 function pluralRu(n, one, few, many) {
   const abs = Math.abs(n) % 100
   const mod10 = abs % 10
@@ -85,24 +72,12 @@ function formatDeadlineDate(iso) {
   return `${dayMonth}, ${time}`
 }
 
-function formatAverage(value) {
-  if (value == null) return '—'
-  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, '')
-}
-
 function scoreTone(score) {
   if (score == null) return 'muted'
   if (score >= 5) return 'excellent'
   if (score >= 4) return 'good'
   if (score >= 3) return 'ok'
   return 'bad'
-}
-
-function averageScores(items) {
-  const scored = items.filter((item) => typeof item.grade === 'number')
-  if (!scored.length) return null
-  const sum = scored.reduce((acc, item) => acc + item.grade, 0)
-  return Math.round((sum / scored.length) * 100) / 100
 }
 
 export function effectiveStatus(item, now = new Date()) {
@@ -229,14 +204,13 @@ function downloadBlob(filename, text) {
 export function useExams(sourceItems = examItems) {
   const now = ref(new Date())
   const period = ref(readStored(EXAMS_PERIOD_STORAGE_KEY, VALID_PERIODS, 'month'))
-  const viewMode = ref(initialView())
+  const viewMode = ref('detailed')
   const anchorDate = ref(startOfDay(now.value))
   const subjectFilter = ref('all')
   const statusFilter = ref('all')
   const uploadTargetId = ref(null)
 
   watch(period, (value) => saveStored(EXAMS_PERIOD_STORAGE_KEY, value))
-  watch(viewMode, (value) => saveStored(EXAMS_VIEW_STORAGE_KEY, value))
 
   function inSelectedPeriod(item) {
     if (period.value === 'all') return true
@@ -340,52 +314,6 @@ export function useExams(sourceItems = examItems) {
       })
   })
 
-  const subjectSummaries = computed(() => {
-    const map = new Map()
-
-    filteredItems.value.forEach((item) => {
-      if (!map.has(item.subject)) {
-        map.set(item.subject, {
-          subject: item.subject,
-          title: item.subjectLabel,
-          exams: [],
-        })
-      }
-      map.get(item.subject).exams.push(item)
-    })
-
-    return [...map.values()]
-      .map((row) => {
-        const avg = averageScores(row.exams)
-        const nearest = row.exams
-          .filter((item) => item.canUpload || item.status === 'uploaded')
-          .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))[0]
-        const latest = row.exams[0]
-        const openCount = row.exams.filter((item) => item.canUpload).length
-        const urgent = row.exams.find(
-          (item) => item.urgency?.id === 'critical' || item.urgency?.id === 'approaching',
-        )
-
-        return {
-          ...row,
-          count: row.exams.length,
-          average: avg,
-          averageLabel: formatAverage(avg),
-          tone: scoreTone(avg == null ? null : Math.round(avg)),
-          nearest,
-          latest,
-          openCount,
-          urgency: urgent?.urgency || nearest?.urgency || null,
-        }
-      })
-      .sort((a, b) => {
-        const aTime = a.nearest ? new Date(a.nearest.deadline).getTime() : Infinity
-        const bTime = b.nearest ? new Date(b.nearest.deadline).getTime() : Infinity
-        if (aTime !== bTime) return aTime - bTime
-        return a.title.localeCompare(b.title, 'ru')
-      })
-  })
-
   const isEmptyPeriod = computed(() => {
     const unfiltered = allItems.value.filter((item) => inSelectedPeriod(item))
     return unfiltered.length === 0
@@ -404,11 +332,6 @@ export function useExams(sourceItems = examItems) {
   function setPeriod(next) {
     if (!VALID_PERIODS.has(next)) return
     period.value = next
-  }
-
-  function setViewMode(next) {
-    if (!VALID_VIEWS.has(next)) return
-    viewMode.value = next
   }
 
   function setSubjectFilter(value) {
@@ -435,12 +358,6 @@ export function useExams(sourceItems = examItems) {
     anchorDate.value = startOfDay(now.value)
   }
 
-  function openSubject(subject) {
-    subjectFilter.value = subject
-    statusFilter.value = 'all'
-    viewMode.value = 'detailed'
-  }
-
   function openUpload(id) {
     const item = allItems.value.find((row) => row.id === id)
     if (!item || !canUploadExam(item, now.value)) return
@@ -465,7 +382,6 @@ export function useExams(sourceItems = examItems) {
     item.grade = null
     closeUpload()
     statusFilter.value = 'uploaded'
-    viewMode.value = 'detailed'
     return true
   }
 
@@ -505,18 +421,15 @@ export function useExams(sourceItems = examItems) {
     periodLabel,
     statusTabs,
     filteredItems,
-    subjectSummaries,
     isEmptyPeriod,
     isEmptyFilter,
     uploadTarget,
     setPeriod,
-    setViewMode,
     setSubjectFilter,
     setStatusFilter,
     goToPrevPeriod,
     goToNextPeriod,
     goToCurrentPeriod,
-    openSubject,
     openUpload,
     closeUpload,
     submitWork,

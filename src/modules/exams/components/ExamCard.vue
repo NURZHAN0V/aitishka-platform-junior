@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { BaseButton, BaseChip, BaseIcon, BaseTooltip } from '@/core/components/ui'
+import { BaseButton, BaseIcon, BaseTooltip } from '@/core/components/ui'
 import { useSubjectIllustration } from '@/core/composables/useSubjectIllustration'
 
 const props = defineProps({
@@ -50,24 +50,7 @@ function onViewWork() {
       </span>
 
       <span class="exam-card__main">
-        <span class="exam-card__title-row">
-          <span class="exam-card__title">{{ item.title }}</span>
-          <span class="exam-card__chips">
-            <BaseTooltip :text="item.statusMeta.tooltip" placement="top">
-              <BaseChip :variant="item.statusMeta.chip" size="sm">
-                {{ item.statusMeta.label }}
-              </BaseChip>
-            </BaseTooltip>
-            <BaseTooltip v-if="item.urgency" :text="item.urgency.tooltip" placement="top">
-              <BaseChip
-                :variant="item.urgency.tone === 'danger' ? 'overdue' : 'pending'"
-                size="sm"
-              >
-                {{ item.urgency.label }}
-              </BaseChip>
-            </BaseTooltip>
-          </span>
-        </span>
+        <span class="exam-card__title">{{ item.title }}</span>
 
         <dl class="exam-card__facts">
           <div class="exam-card__fact">
@@ -205,25 +188,10 @@ function onViewWork() {
     gap: $space-3;
   }
 
-  &__title-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: $space-2 $space-3;
-  }
-
   &__title {
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
     color: $color-text-primary;
-  }
-
-  &__chips {
-    display: inline-flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: $space-2;
   }
 
   &__facts {

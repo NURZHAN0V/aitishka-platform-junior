@@ -1,18 +1,15 @@
 <script setup>
 import { computed } from 'vue'
-import { BaseCard, BaseChip, BaseIcon } from '@/core/components/ui'
-import { useSubjectIllustration } from '@/core/composables/useSubjectIllustration'
+import { BaseCard } from '@/core/components/ui'
 import ExamCard from './ExamCard.vue'
 
 const props = defineProps({
-  viewMode: { type: String, required: true },
   items: { type: Array, default: () => [] },
-  subjectSummaries: { type: Array, default: () => [] },
   isEmptyPeriod: { type: Boolean, default: false },
   isEmptyFilter: { type: Boolean, default: false },
 })
 
-defineEmits(['download', 'upload', 'view-work', 'open-subject'])
+defineEmits(['download', 'upload', 'view-work'])
 
 const emptyTitle = computed(() => {
   if (props.isEmptyFilter) return 'Нет экзаменов по выбранным фильтрам'
@@ -25,10 +22,6 @@ const emptyHint = computed(() => {
   }
   return 'Попробуйте соседний месяц или весь период обучения.'
 })
-
-function subjectIcon(subject) {
-  return useSubjectIllustration(subject)
-}
 </script>
 
 <template>
@@ -37,59 +30,6 @@ function subjectIcon(subject) {
       <p class="exams-list__empty-title">{{ emptyTitle }}</p>
       <p class="exams-list__empty-hint">{{ emptyHint }}</p>
     </BaseCard>
-
-    <template v-else-if="viewMode === 'summary'">
-      <div class="exams-list__summary-grid">
-        <button
-          v-for="row in subjectSummaries"
-          :key="row.subject"
-          type="button"
-          class="exams-list__subject"
-          :style="{ '--subject-color': subjectIcon(row.subject).color || '#8b5cf6' }"
-          @click="$emit('open-subject', row.subject)"
-          title="Открыть экзамены предмета"
-        >
-          <span class="exams-list__subject-stripe" aria-hidden="true" />
-          <BaseIcon
-            :name="subjectIcon(row.subject).name"
-            type="avif"
-            :size="40"
-            :label="row.title"
-          />
-          <div class="exams-list__subject-main">
-            <h3 class="exams-list__subject-title">{{ row.title }}</h3>
-            <p class="exams-list__subject-meta">
-              {{ row.count }} экзаменов
-              <template v-if="row.openCount">
-                · {{ row.openCount }} можно сдать
-              </template>
-            </p>
-            <div class="exams-list__subject-chips">
-              <BaseChip
-                v-if="row.urgency"
-                :variant="row.urgency.tone === 'danger' ? 'overdue' : 'pending'"
-                size="sm"
-              >
-                {{ row.urgency.label }}
-              </BaseChip>
-              <BaseChip
-                v-if="row.latest"
-                :variant="row.latest.statusMeta.chip"
-                size="sm"
-              >
-                {{ row.latest.statusMeta.label }}
-              </BaseChip>
-            </div>
-          </div>
-          <p
-            class="exams-list__subject-avg"
-            :class="`exams-list__subject-avg--${row.tone}`"
-          >
-            {{ row.averageLabel }}
-          </p>
-        </button>
-      </div>
-    </template>
 
     <div v-else class="exams-list__grid">
       <ExamCard
@@ -106,7 +46,6 @@ function subjectIcon(subject) {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
-@use '@/assets/styles/mixins' as *;
 
 .exams-list {
   &__empty {
@@ -131,109 +70,10 @@ function subjectIcon(subject) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: $space-4;
   }
-
-  &__summary-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: $space-3;
-  }
-
-  &__subject {
-    @include card-surface;
-
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: $space-4;
-    overflow: hidden;
-    width: 100%;
-    padding: $space-4;
-    border: 1px solid $color-border-light;
-    box-shadow: $shadow-sm;
-    background: $color-bg-card;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    color: inherit;
-    transition: border-color $transition-base, box-shadow $transition-base;
-
-    &:hover {
-      border-color: $color-primary-muted;
-      box-shadow: $shadow-card;
-    }
-
-    &:focus-visible {
-      @include focus-ring;
-    }
-  }
-
-  &__subject-stripe {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--subject-color);
-  }
-
-  &__subject-main {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__subject-title {
-    margin: 0;
-    font-size: $font-size-base;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
-  }
-
-  &__subject-meta {
-    margin: $space-1 0 0;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-  }
-
-  &__subject-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space-2;
-    margin-top: $space-2;
-  }
-
-  &__subject-avg {
-    margin: 0;
-    min-width: 2.75rem;
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: $font-weight-bold;
-    line-height: 1;
-
-    &--excellent {
-      color: $color-success;
-    }
-
-    &--good {
-      color: $color-primary;
-    }
-
-    &--ok {
-      color: $color-warning;
-    }
-
-    &--bad {
-      color: $color-error;
-    }
-
-    &--muted {
-      color: $color-text-muted;
-    }
-  }
 }
 
 @media (max-width: 960px) {
-  .exams-list__grid,
-  .exams-list__summary-grid {
+  .exams-list__grid {
     grid-template-columns: 1fr;
   }
 }
