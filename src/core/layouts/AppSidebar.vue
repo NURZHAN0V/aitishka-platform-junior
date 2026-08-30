@@ -826,6 +826,7 @@ function scheduleHideFlyout() {
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
     white-space: nowrap;
+    cursor: pointer;
     transition: background-color $transition-fast, color $transition-fast;
 
     &:hover:not(&--active) {
@@ -911,6 +912,7 @@ function scheduleHideFlyout() {
     text-decoration: none;
     font-size: $font-size-sm;
     font-weight: $font-weight-medium;
+    cursor: pointer;
     transition: background-color $transition-base, color $transition-base, filter $transition-base;
 
     &:hover:not(&--active) {
