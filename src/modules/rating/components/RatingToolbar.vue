@@ -1,11 +1,9 @@
 <script setup>
-import { BaseChip, BaseIcon, BaseTabs, BaseTooltip } from '@/core/components/ui'
+import { BaseIcon, BaseTabs, BaseTooltip } from '@/core/components/ui'
 import { PERIOD_TABS } from '../constants/rating.js'
 
 defineProps({
   period: { type: String, required: true },
-  periodLabel: { type: String, required: true },
-  isCurrentPeriod: { type: Boolean, default: true },
   formulaTooltip: { type: String, required: true },
 })
 
@@ -23,19 +21,11 @@ defineEmits(['update:period'])
       </BaseTooltip>
     </div>
 
-    <div class="rating-toolbar__controls">
-      <BaseTabs
-        :model-value="period"
-        :tabs="PERIOD_TABS"
-        @update:model-value="$emit('update:period', $event)"
-      />
-
-      <p class="rating-toolbar__period">
-        <BaseIcon name="calendar-03" :size="18" />
-        <span>{{ periodLabel }}</span>
-        <BaseChip v-if="!isCurrentPeriod" variant="pending" size="sm">Архив</BaseChip>
-      </p>
-    </div>
+    <BaseTabs
+      :model-value="period"
+      :tabs="PERIOD_TABS"
+      @update:model-value="$emit('update:period', $event)"
+    />
   </div>
 </template>
 
@@ -81,23 +71,6 @@ defineEmits(['update:period'])
       border-radius: $radius-sm;
     }
   }
-
-  &__controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: $space-3 $space-4;
-  }
-
-  &__period {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-2;
-    margin: 0;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-text-secondary;
-  }
 }
 
 @media (max-width: 720px) {
@@ -107,11 +80,6 @@ defineEmits(['update:period'])
 
     &__title {
       font-size: $font-size-xl;
-    }
-
-    &__controls {
-      flex-direction: column;
-      align-items: stretch;
     }
   }
 }

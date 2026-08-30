@@ -1,29 +1,11 @@
 <script setup>
-import { BaseCard, BaseChip, BaseIcon, BaseTooltip } from '@/core/components/ui'
-
 defineProps({
   rows: { type: Array, default: () => [] },
-  periodLabel: { type: String, required: true },
 })
 </script>
 
 <template>
-  <BaseCard padding="md" class="rating-table" aria-label="Полная таблица группы">
-    <div class="rating-table__head">
-      <div>
-        <h2 class="rating-table__title">Вся группа</h2>
-        <p class="rating-table__meta">{{ periodLabel }} · место, ФИО, балл рейтинга</p>
-      </div>
-      <BaseTooltip
-        text="Место за календарный месяц. При равных баллах — по алфавиту"
-        placement="top"
-      >
-        <button type="button" class="rating-table__hint" aria-label="Про таблицу">
-          <BaseIcon name="info-circle" :size="16" />
-        </button>
-      </BaseTooltip>
-    </div>
-
+  <div class="rating-table" aria-label="Рейтинг группы">
     <div class="rating-table__scroll">
       <table class="rating-table__grid">
         <thead>
@@ -45,10 +27,7 @@ defineProps({
               <span class="rating-table__place">{{ row.rank }}</span>
             </td>
             <td>
-              <span class="rating-table__person">
-                <span class="rating-table__name">{{ row.fullName }}</span>
-                <BaseChip v-if="row.isCurrent" variant="current" size="sm">Вы</BaseChip>
-              </span>
+              <span class="rating-table__name">{{ row.fullName }}</span>
             </td>
             <td>{{ row.avgLabel }}</td>
             <td>{{ row.homeworkOnTime }} из {{ row.homeworkTotal }}</td>
@@ -57,53 +36,13 @@ defineProps({
         </tbody>
       </table>
     </div>
-  </BaseCard>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
-@use '@/assets/styles/mixins' as *;
 
 .rating-table {
-  &__head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: $space-3;
-    margin-bottom: $space-4;
-  }
-
-  &__title {
-    margin: 0;
-    font-size: $font-size-lg;
-    font-weight: $font-weight-bold;
-    color: $color-text-primary;
-  }
-
-  &__meta {
-    margin: $space-1 0 0;
-    font-size: $font-size-sm;
-    color: $color-text-muted;
-  }
-
-  &__hint {
-    display: inline-flex;
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: $color-text-muted;
-    cursor: pointer;
-
-    &:hover {
-      color: $color-primary;
-    }
-
-    &:focus-visible {
-      @include focus-ring;
-      border-radius: $radius-sm;
-    }
-  }
-
   &__scroll {
     overflow-x: auto;
   }
@@ -155,13 +94,6 @@ defineProps({
 
   &__name {
     font-weight: $font-weight-semibold;
-  }
-
-  &__person {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: $space-2;
   }
 
   &__points {

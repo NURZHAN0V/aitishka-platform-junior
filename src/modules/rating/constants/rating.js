@@ -13,26 +13,15 @@ export const LEADERBOARD_LIMIT = 5
 
 export const PERIOD_TABS = [
   { id: 'current', label: 'Текущий месяц' },
-  { id: 'previous', label: 'Прошлый месяц' },
+  { id: 'all', label: 'Всё время' },
 ]
 
-/** Якорь «сегодня» — как у оценок, август 2026 */
+/** Якорь «сегодня» — как у оценок, август 2026 (месяц в UI не показываем) */
 export const RATING_TODAY = new Date(2026, 7, 30)
 
 export const CURRENT_MONTH_KEY = '2026-08'
 export const PREVIOUS_MONTH_KEY = '2026-07'
-
-export function toMonthKey(date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-}
-
-export function formatMonthTitle(date) {
-  const formatted = new Intl.DateTimeFormat('ru-RU', {
-    month: 'long',
-    year: 'numeric',
-  }).format(date)
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1).replace(/\sг\.?$/, '')
-}
+export const EARLIER_MONTH_KEY = '2026-06'
 
 export function formatAverage(value) {
   if (value == null) return '—'
@@ -114,6 +103,57 @@ export const MOCK_RATING_BY_MONTH = {
     nika: { avgGrade: 3.3, homeworkOnTime: 5, homeworkTotal: 11 },
     egor: { avgGrade: 3.1, homeworkOnTime: 4, homeworkTotal: 11 },
   }),
+  [EARLIER_MONTH_KEY]: fromGroup({
+    sofia: { avgGrade: 4.8, homeworkOnTime: 10, homeworkTotal: 10 },
+    artem: { avgGrade: 4.4, homeworkOnTime: 8, homeworkTotal: 10 },
+    alina: { avgGrade: 4.6, homeworkOnTime: 9, homeworkTotal: 10 },
+    maxim: { avgGrade: 4.4, homeworkOnTime: 9, homeworkTotal: 10 },
+    vika: { avgGrade: 4.1, homeworkOnTime: 8, homeworkTotal: 10 },
+    denis: { avgGrade: 4.0, homeworkOnTime: 7, homeworkTotal: 10 },
+    masha: { avgGrade: 4.2, homeworkOnTime: 8, homeworkTotal: 10 },
+    ilya: { avgGrade: 3.8, homeworkOnTime: 6, homeworkTotal: 10 },
+    katya: { avgGrade: 3.6, homeworkOnTime: 6, homeworkTotal: 10 },
+    pavel: { avgGrade: 3.4, homeworkOnTime: 5, homeworkTotal: 10 },
+    nika: { avgGrade: 3.2, homeworkOnTime: 5, homeworkTotal: 10 },
+    egor: { avgGrade: 3.0, homeworkOnTime: 4, homeworkTotal: 10 },
+  }),
+}
+
+function aggregateAllMonths() {
+  const byId = new Map()
+
+  for (const list of Object.values(MOCK_RATING_BY_MONTH)) {
+    for (const row of list) {
+      const prev = byId.get(row.id)
+      if (!prev) {
+        byId.set(row.id, {
+          id: row.id,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          shortName: row.shortName,
+          gradeWeightSum: row.avgGrade * row.homeworkTotal,
+          weight: row.homeworkTotal,
+          homeworkOnTime: row.homeworkOnTime,
+          homeworkTotal: row.homeworkTotal,
+        })
+        continue
+      }
+      prev.gradeWeightSum += row.avgGrade * row.homeworkTotal
+      prev.weight += row.homeworkTotal
+      prev.homeworkOnTime += row.homeworkOnTime
+      prev.homeworkTotal += row.homeworkTotal
+    }
+  }
+
+  return [...byId.values()].map((row) => ({
+    id: row.id,
+    firstName: row.firstName,
+    lastName: row.lastName,
+    shortName: row.shortName,
+    avgGrade: row.weight > 0 ? Math.round((row.gradeWeightSum / row.weight) * 10) / 10 : 0,
+    homeworkOnTime: row.homeworkOnTime,
+    homeworkTotal: row.homeworkTotal,
+  }))
 }
 
 export function computeRatingBreakdown(row) {
@@ -160,6 +200,14 @@ export function getMonthRanking(monthKey) {
   return rankStudents(MOCK_RATING_BY_MONTH[monthKey] ?? [])
 }
 
+export function getAllTimeRanking() {
+  return rankStudents(aggregateAllMonths())
+}
+
+export function getRankingForPeriod(periodId) {
+  return periodId === 'all' ? getAllTimeRanking() : getMonthRanking(CURRENT_MONTH_KEY)
+}
+
 const currentRanking = getMonthRanking(CURRENT_MONTH_KEY)
 const currentUserRow = currentRanking.find((row) => row.isCurrent)
 
@@ -184,7 +232,5 @@ export const RATING_WIDGET_SNAPSHOT = {
 export const FORMULA_TOOLTIP =
   '50% средний балл (шкала 2–5) + 50% ДЗ вовремя и зачтённые. Пересчёт каждый день; в новом месяце счётчики обнуляются.'
 
-export const DYNAMICS_TOOLTIP_EMPTY = 'Нет данных за месяц раньше выбранного — динамику показать нельзя.'
-
-export const COINS_HINT =
-  'Монетки в рейтинг не входят. Но средний балл и ДЗ вовремя влияют и на место, и на начисления: 3 монетки за ДЗ вовремя и зачтённое, +2 за пятёрку по ДЗ.'
+export const FORMULA_TOOLTIP_ALL_TIME =
+  '50% средний балл (шкала 2–5) + 50% ДЗ вовремя и зачтённые за всё время обучения.'
