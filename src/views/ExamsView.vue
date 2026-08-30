@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import AppLayout from '@/core/layouts/AppLayout.vue'
 import { useToast } from '@/core/composables/useToast'
 import { useExams } from '@/modules/exams/composables/useExams.js'
-import ExamsSummary from '@/modules/exams/components/ExamsSummary.vue'
 import ExamsToolbar from '@/modules/exams/components/ExamsToolbar.vue'
 import ExamsList from '@/modules/exams/components/ExamsList.vue'
 import ExamUploadModal from '@/modules/exams/components/ExamUploadModal.vue'
@@ -21,14 +20,10 @@ const {
   viewMode,
   subjectFilter,
   statusFilter,
-  expandedId,
   periodLabel,
   statusTabs,
   filteredItems,
   subjectSummaries,
-  upcomingItems,
-  periodCounts,
-  motivation,
   isEmptyPeriod,
   isEmptyFilter,
   uploadTarget,
@@ -36,12 +31,9 @@ const {
   setViewMode,
   setSubjectFilter,
   setStatusFilter,
-  selectStatus,
   goToPrevPeriod,
   goToNextPeriod,
   goToCurrentPeriod,
-  toggleItem,
-  openExam,
   openSubject,
   openUpload,
   closeUpload,
@@ -83,16 +75,6 @@ function onViewWork(item) {
     active-route="exams"
   >
     <div class="exams-view">
-      <ExamsSummary
-        :awaiting-count="periodCounts.awaiting"
-        :urgent-count="periodCounts.urgent"
-        :missed-count="periodCounts.missed"
-        :upcoming-items="upcomingItems"
-        :motivation="motivation"
-        @select-status="selectStatus"
-        @open-exam="openExam"
-      />
-
       <ExamsToolbar
         :period="period"
         :view-mode="viewMode"
@@ -113,10 +95,8 @@ function onViewWork(item) {
         :view-mode="viewMode"
         :items="filteredItems"
         :subject-summaries="subjectSummaries"
-        :expanded-id="expandedId"
         :is-empty-period="isEmptyPeriod"
         :is-empty-filter="isEmptyFilter"
-        @toggle="toggleItem"
         @download="onDownload"
         @upload="openUpload"
         @view-work="onViewWork"

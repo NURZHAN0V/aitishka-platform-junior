@@ -1,40 +1,39 @@
 <script setup>
 import { BaseCard, BaseIcon, BaseTooltip } from '@/core/components/ui'
+import { COINS_HINT } from '../constants/rating.js'
 
 defineProps({
-  motivation: { type: Object, required: true },
+  rank: { type: Number, default: 0 },
+  total: { type: Number, default: 0 },
+  gradesShare: { type: Number, default: 0 },
+  homeworkShare: { type: Number, default: 0 },
+  homeworkPercent: { type: Number, default: 0 },
 })
 </script>
 
 <template>
-  <BaseCard padding="md" class="exams-motivation">
-    <div class="exams-motivation__row">
-      <BaseIcon name="chart-bar" :size="28" class="exams-motivation__icon" />
-      <div class="exams-motivation__copy">
-        <p class="exams-motivation__title">Экзамен и рейтинг месяца</p>
-        <p class="exams-motivation__text">
-          Оценка
-          <strong>2–5</strong>
-          входит в средний балл. Рейтинг месяца:
-          <strong>{{ motivation.ratingWeightPercent }}% средний балл</strong>
-          и столько же — доля ДЗ вовремя. За экзамен монетки не дают, но балл двигает место в учёбе.
-        </p>
+  <BaseCard padding="md" class="rating-motivation">
+    <div class="rating-motivation__row">
+      <BaseIcon name="coin" :size="28" class="rating-motivation__icon" />
+      <div class="rating-motivation__copy">
+        <p class="rating-motivation__title">Монетки и рейтинг</p>
+        <p class="rating-motivation__text">{{ COINS_HINT }}</p>
       </div>
       <BaseTooltip
-        text="Монетки начисляют за ДЗ вовремя и пятёрки по ДЗ, не за сам экзамен"
+        text="Рейтинг считает средний балл и долю ДЗ вовремя. Монетки — отдельная мотивация"
         placement="top"
       >
-        <button type="button" class="exams-motivation__hint" aria-label="Про рейтинг и монетки">
+        <button type="button" class="rating-motivation__hint" aria-label="Про монетки и рейтинг">
           <BaseIcon name="info-circle" :size="16" />
         </button>
       </BaseTooltip>
     </div>
-    <p class="exams-motivation__meta">
-      Средний балл за экзамены: {{ motivation.averageLabel }}
+    <p class="rating-motivation__meta">
+      Сейчас {{ rank }} место из {{ total }}
       <span aria-hidden="true">·</span>
-      сдано {{ motivation.submittedCount }} из {{ motivation.totalCount }}
+      вклад оценок {{ gradesShare }} / вклад ДЗ {{ homeworkShare }}
       <span aria-hidden="true">·</span>
-      сейчас {{ motivation.rank }} место из {{ motivation.rankTotal }}
+      ДЗ вовремя {{ homeworkPercent }}%
     </p>
   </BaseCard>
 </template>
@@ -43,7 +42,7 @@ defineProps({
 @use '@/assets/styles/tokens' as *;
 @use '@/assets/styles/mixins' as *;
 
-.exams-motivation {
+.rating-motivation {
   &__row {
     display: flex;
     align-items: flex-start;
@@ -53,7 +52,7 @@ defineProps({
   &__icon {
     flex-shrink: 0;
     margin-top: 2px;
-    color: $color-primary;
+    color: $color-coin-dark;
   }
 
   &__copy {

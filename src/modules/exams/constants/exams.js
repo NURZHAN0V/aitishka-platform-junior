@@ -1,14 +1,11 @@
 import { SUBJECT_LABELS } from '@/modules/schedule/constants/lessons.js'
-import { GRADE_SCALE, RATING_GRADES_WEIGHT } from '@/modules/grades/constants/grades.js'
+import { GRADE_SCALE } from '@/modules/grades/constants/grades.js'
 
-export { SUBJECT_LABELS, GRADE_SCALE, RATING_GRADES_WEIGHT }
+export { SUBJECT_LABELS, GRADE_SCALE }
 
 export const EXAMS_VIEW_STORAGE_KEY = 'elektronnyj-dnevnik:exams-view'
 export const EXAMS_PERIOD_STORAGE_KEY = 'elektronnyj-dnevnik:exams-period'
 export const EXAMS_DESKTOP_MQ = '(min-width: 1281px)'
-
-/** Мок места в рейтинге — как на главной; оценка за экзамен входит в средний балл */
-export const MOCK_RATING_PLACE = { rank: 3, total: 12 }
 
 export const EXAM_STATUSES = {
   all: {

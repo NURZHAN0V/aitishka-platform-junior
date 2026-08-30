@@ -1,5 +1,5 @@
 <script setup>
-// import { RouterLink } from 'vue-router' // раздел «Домашние задания» временно скрыт
+import { RouterLink } from 'vue-router'
 import { BaseIcon } from '@/core/components/ui'
 import { WIDGET_ILLUSTRATIONS } from '@/core/constants/illustrations'
 import { HOMEWORK_WIDGET_MOCK } from '../constants/widgets.js'
@@ -43,11 +43,9 @@ defineProps({
       </div>
     </div>
 
-    <!-- Скрыто: переход в раздел «Домашние задания»
     <footer class="home-homework-widget__footer">
       <RouterLink :to="linkHref" class="home-homework-widget__link">Все задания →</RouterLink>
     </footer>
-    -->
   </article>
 </template>
 

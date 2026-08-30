@@ -1,0 +1,190 @@
+export const RATING_PERIOD_STORAGE_KEY = 'elektronnyj-dnevnik:rating-period'
+
+export const CURRENT_USER_ID = 'alina'
+
+/** Шкала оценок продукта: 2–5 */
+export const GRADE_SCALE_MIN = 2
+export const GRADE_SCALE_MAX = 5
+
+/** 50% средний балл + 50% ДЗ вовремя (docs/produkt.md) */
+export const RATING_GRADES_WEIGHT = 0.5
+
+export const LEADERBOARD_LIMIT = 5
+
+export const PERIOD_TABS = [
+  { id: 'current', label: 'Текущий месяц' },
+  { id: 'previous', label: 'Прошлый месяц' },
+]
+
+/** Якорь «сегодня» — как у оценок, август 2026 */
+export const RATING_TODAY = new Date(2026, 7, 30)
+
+export const CURRENT_MONTH_KEY = '2026-08'
+export const PREVIOUS_MONTH_KEY = '2026-07'
+
+export function toMonthKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+}
+
+export function formatMonthTitle(date) {
+  const formatted = new Intl.DateTimeFormat('ru-RU', {
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1).replace(/\sг\.?$/, '')
+}
+
+export function formatAverage(value) {
+  if (value == null) return '—'
+  return Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, '')
+}
+
+function student(id, firstName, lastName, avgGrade, homeworkOnTime, homeworkTotal, shortName) {
+  return {
+    id,
+    firstName,
+    lastName,
+    shortName: shortName ?? `${firstName} ${lastName.charAt(0)}.`,
+    avgGrade,
+    homeworkOnTime,
+    homeworkTotal,
+  }
+}
+
+const GROUP = [
+  ['sofia', 'София', 'Козлова'],
+  ['artem', 'Артём', 'Лебедев'],
+  ['alina', 'Алина', 'Петрова'],
+  ['maxim', 'Максим', 'Дмитриев'],
+  ['vika', 'Виктория', 'Соколова', 'Вика С.'],
+  ['denis', 'Денис', 'Орлов'],
+  ['masha', 'Мария', 'Волкова'],
+  ['ilya', 'Илья', 'Новиков'],
+  ['katya', 'Екатерина', 'Белова', 'Катя Б.'],
+  ['pavel', 'Павел', 'Морозов'],
+  ['nika', 'Вероника', 'Крылова', 'Ника К.'],
+  ['egor', 'Егор', 'Савельев'],
+]
+
+function fromGroup(metricsById) {
+  return GROUP.map(([id, firstName, lastName, shortName]) => {
+    const metrics = metricsById[id]
+    return student(
+      id,
+      firstName,
+      lastName,
+      metrics.avgGrade,
+      metrics.homeworkOnTime,
+      metrics.homeworkTotal,
+      shortName,
+    )
+  })
+}
+
+/**
+ * Сырые метрики месяца. Баллы считаются по формуле, не хардкодятся.
+ * ДЗ: сдано вовремя и зачтено / всего за месяц.
+ */
+export const MOCK_RATING_BY_MONTH = {
+  [CURRENT_MONTH_KEY]: fromGroup({
+    sofia: { avgGrade: 4.9, homeworkOnTime: 12, homeworkTotal: 12 },
+    artem: { avgGrade: 4.7, homeworkOnTime: 11, homeworkTotal: 12 },
+    alina: { avgGrade: 4.7, homeworkOnTime: 10, homeworkTotal: 12 },
+    maxim: { avgGrade: 4.5, homeworkOnTime: 10, homeworkTotal: 12 },
+    vika: { avgGrade: 4.3, homeworkOnTime: 10, homeworkTotal: 12 },
+    denis: { avgGrade: 4.2, homeworkOnTime: 9, homeworkTotal: 12 },
+    masha: { avgGrade: 4.1, homeworkOnTime: 9, homeworkTotal: 12 },
+    ilya: { avgGrade: 4.0, homeworkOnTime: 8, homeworkTotal: 12 },
+    katya: { avgGrade: 3.8, homeworkOnTime: 8, homeworkTotal: 12 },
+    pavel: { avgGrade: 3.6, homeworkOnTime: 7, homeworkTotal: 12 },
+    nika: { avgGrade: 3.4, homeworkOnTime: 6, homeworkTotal: 12 },
+    egor: { avgGrade: 3.2, homeworkOnTime: 5, homeworkTotal: 12 },
+  }),
+  [PREVIOUS_MONTH_KEY]: fromGroup({
+    sofia: { avgGrade: 4.8, homeworkOnTime: 11, homeworkTotal: 11 },
+    artem: { avgGrade: 4.6, homeworkOnTime: 10, homeworkTotal: 11 },
+    maxim: { avgGrade: 4.5, homeworkOnTime: 10, homeworkTotal: 11 },
+    alina: { avgGrade: 4.5, homeworkOnTime: 9, homeworkTotal: 11 },
+    vika: { avgGrade: 4.2, homeworkOnTime: 9, homeworkTotal: 11 },
+    denis: { avgGrade: 4.1, homeworkOnTime: 8, homeworkTotal: 11 },
+    masha: { avgGrade: 4.0, homeworkOnTime: 8, homeworkTotal: 11 },
+    ilya: { avgGrade: 3.9, homeworkOnTime: 7, homeworkTotal: 11 },
+    katya: { avgGrade: 3.7, homeworkOnTime: 7, homeworkTotal: 11 },
+    pavel: { avgGrade: 3.5, homeworkOnTime: 6, homeworkTotal: 11 },
+    nika: { avgGrade: 3.3, homeworkOnTime: 5, homeworkTotal: 11 },
+    egor: { avgGrade: 3.1, homeworkOnTime: 4, homeworkTotal: 11 },
+  }),
+}
+
+export function computeRatingBreakdown(row) {
+  const ratio = row.homeworkTotal > 0 ? row.homeworkOnTime / row.homeworkTotal : 0
+  const gradesNormalized =
+    ((row.avgGrade - GRADE_SCALE_MIN) / (GRADE_SCALE_MAX - GRADE_SCALE_MIN)) * 100
+  const homeworkPercent = ratio * 100
+  const gradesShare = gradesNormalized * RATING_GRADES_WEIGHT
+  const homeworkShare = homeworkPercent * (1 - RATING_GRADES_WEIGHT)
+
+  return {
+    gradesNormalized,
+    homeworkPercent,
+    gradesShare,
+    homeworkShare,
+    points: Math.round(gradesShare + homeworkShare),
+  }
+}
+
+export function rankStudents(students) {
+  return [...students]
+    .map((row) => {
+      const breakdown = computeRatingBreakdown(row)
+      return {
+        ...row,
+        fullName: `${row.lastName} ${row.firstName}`,
+        avgLabel: formatAverage(row.avgGrade),
+        gradesPercent: Math.round(breakdown.gradesNormalized),
+        homeworkPercent: Math.round(breakdown.homeworkPercent),
+        gradesShare: Math.round(breakdown.gradesShare),
+        homeworkShare: Math.round(breakdown.homeworkShare),
+        points: breakdown.points,
+        isCurrent: row.id === CURRENT_USER_ID,
+      }
+    })
+    .sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points
+      return a.fullName.localeCompare(b.fullName, 'ru')
+    })
+    .map((row, index) => ({ ...row, rank: index + 1 }))
+}
+
+export function getMonthRanking(monthKey) {
+  return rankStudents(MOCK_RATING_BY_MONTH[monthKey] ?? [])
+}
+
+const currentRanking = getMonthRanking(CURRENT_MONTH_KEY)
+const currentUserRow = currentRanking.find((row) => row.isCurrent)
+
+/** Снимок для виджета на главной — те же баллы, что на странице /rating */
+export const RATING_WIDGET_SNAPSHOT = {
+  rank: currentUserRow?.rank ?? 0,
+  total: currentRanking.length,
+  points: currentUserRow?.points ?? 0,
+  periodLabel: 'За текущий месяц',
+  gradesPercent: Math.round(RATING_GRADES_WEIGHT * 100),
+  homeworkPercent: Math.round((1 - RATING_GRADES_WEIGHT) * 100),
+  leaderboard: currentRanking.slice(0, LEADERBOARD_LIMIT).map((row) => ({
+    rank: row.rank,
+    name: row.shortName,
+    points: row.points,
+    isCurrent: row.isCurrent,
+  })),
+  leaderboardLimit: LEADERBOARD_LIMIT,
+  linkHref: '/rating',
+}
+
+export const FORMULA_TOOLTIP =
+  '50% средний балл (шкала 2–5) + 50% ДЗ вовремя и зачтённые. Пересчёт каждый день; в новом месяце счётчики обнуляются.'
+
+export const DYNAMICS_TOOLTIP_EMPTY = 'Нет данных за месяц раньше выбранного — динамику показать нельзя.'
+
+export const COINS_HINT =
+  'Монетки в рейтинг не входят. Но средний балл и ДЗ вовремя влияют и на место, и на начисления: 3 монетки за ДЗ вовремя и зачтённое, +2 за пятёрку по ДЗ.'

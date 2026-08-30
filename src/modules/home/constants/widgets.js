@@ -1,25 +1,11 @@
-export const RATING_WIDGET_MOCK = {
-  rank: 3,
-  total: 12,
-  points: 87,
-  periodLabel: 'За текущий месяц',
-  gradesPercent: 50,
-  homeworkPercent: 50,
-  leaderboard: [
-    { rank: 1, name: 'София К.', points: 98 },
-    { rank: 2, name: 'Артём Л.', points: 91 },
-    { rank: 3, name: 'Алина П.', points: 87, isCurrent: true },
-    { rank: 4, name: 'Максим Д.', points: 84 },
-    { rank: 5, name: 'Вика С.', points: 79 },
-  ],
-  leaderboardLimit: 5,
-  linkHref: '#',
-}
+import { RATING_WIDGET_SNAPSHOT } from '@/modules/rating/constants/rating.js'
+
+export const RATING_WIDGET_MOCK = RATING_WIDGET_SNAPSHOT
 
 export const HOMEWORK_WIDGET_MOCK = {
   pending: 2,
   overdue: 1,
-  linkHref: '#', // '/homework' — раздел временно скрыт из навигации
+  linkHref: '/homework',
 }
 
 export const STREAKS_WIDGET_MOCK = {
@@ -33,7 +19,7 @@ export const GRADES_WIDGET_MOCK = {
   attendancePercent: 86,
   periodLabel: 'За текущую неделю',
   statusLabel: 'Хорошо!',
-  linkHref: '#', // '/grades' — раздел временно скрыт из навигации
+  linkHref: '/grades',
   chartData: [
     { label: 'Пн', value: 100 },
     { label: 'Вт', value: 100 },

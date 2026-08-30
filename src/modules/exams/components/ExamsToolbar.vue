@@ -94,7 +94,7 @@ const showMonthNav = computed(() => props.period === 'month')
           @update:model-value="emit('update:viewMode', $event)"
         />
         <BaseTooltip
-          text="Сводный — по предметам. Детализированный — каждая работа, клик раскрывает программу"
+          text="Сводный — по предметам. Детализированный — каждая работа отдельно"
           placement="bottom"
         >
           <button type="button" class="exams-toolbar__hint" aria-label="Про виды списка">
@@ -104,38 +104,31 @@ const showMonthNav = computed(() => props.period === 'month')
       </div>
     </div>
 
-    <div class="exams-toolbar__filters">
-      <div class="exams-toolbar__filter">
-        <div class="exams-toolbar__filter-label">
-          <span>Предмет</span>
-          <BaseTooltip text="Показать экзамены только по одному предмету" placement="top">
-            <button type="button" class="exams-toolbar__hint" aria-label="Про фильтр предмета">
-              <BaseIcon name="info-circle" :size="14" />
-            </button>
-          </BaseTooltip>
-        </div>
+    <div class="exams-toolbar__filters" aria-label="Экзамены">
+      <div class="exams-toolbar__statuses" role="tablist" aria-label="Статусы экзаменов">
+        <BaseTooltip v-for="tab in statusTabs" :key="tab.id" :text="tab.tooltip" placement="top">
+          <BaseChip
+            mode="filter"
+            toned
+            :variant="tab.chip"
+            :active="statusFilter === tab.id"
+            :count="tab.count"
+            @click="emit('update:statusFilter', tab.id)"
+          >
+            {{ tab.label }}
+          </BaseChip>
+        </BaseTooltip>
+      </div>
+
+      <div class="exams-toolbar__subject">
         <BaseSelect
           :model-value="subjectFilter"
           :options="SUBJECT_OPTIONS"
           id="exams-subject-filter"
+          aria-label="Предмет"
           @update:model-value="emit('update:subjectFilter', $event)"
         />
       </div>
-    </div>
-
-    <div class="exams-toolbar__statuses" role="tablist" aria-label="Статусы экзаменов">
-      <BaseTooltip v-for="tab in statusTabs" :key="tab.id" :text="tab.tooltip" placement="top">
-        <BaseChip
-          mode="filter"
-          toned
-          :variant="tab.chip"
-          :active="statusFilter === tab.id"
-          :count="tab.count"
-          @click="emit('update:statusFilter', tab.id)"
-        >
-          {{ tab.label }}
-        </BaseChip>
-      </BaseTooltip>
     </div>
   </div>
 </template>
@@ -236,43 +229,32 @@ const showMonthNav = computed(() => props.period === 'month')
   }
 
   &__filters {
-    display: grid;
-    grid-template-columns: minmax(0, 220px);
-    gap: $space-4;
-  }
-
-  &__filter {
     display: flex;
-    flex-direction: column;
-    gap: $space-2;
-    min-width: 0;
-  }
-
-  &__filter-label {
-    display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: $space-2;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-medium;
-    color: $color-text-primary;
+    justify-content: space-between;
+    gap: $space-3 $space-4;
   }
 
   &__statuses {
     display: flex;
     flex-wrap: wrap;
     gap: $space-2;
+    min-width: 0;
 
     :deep(.base-chip) {
       flex-shrink: 0;
     }
   }
+
+  &__subject {
+    flex-shrink: 0;
+    width: min(220px, 100%);
+    margin-left: auto;
+  }
 }
 
 @media (max-width: 720px) {
-  .exams-toolbar__filters {
-    grid-template-columns: 1fr;
-  }
-
   .exams-toolbar__period {
     width: 100%;
     flex-wrap: wrap;
@@ -285,6 +267,12 @@ const showMonthNav = computed(() => props.period === 'month')
     padding-bottom: $space-1;
     margin-inline: -#{$space-1};
     padding-inline: $space-1;
+    max-width: 100%;
+  }
+
+  .exams-toolbar__subject {
+    width: 100%;
+    margin-left: 0;
   }
 }
 </style>

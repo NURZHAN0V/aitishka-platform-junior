@@ -23,11 +23,11 @@ const navGroups = [
     title: 'Учёба',
     illustration: NAV_ILLUSTRATIONS.homework,
     items: [
-      // { id: 'schedule', label: 'Расписание', illustration: NAV_ILLUSTRATIONS.schedule, href: '/schedule' },
-      // { id: 'grades', label: 'Оценки', illustration: NAV_ILLUSTRATIONS.grades, href: '/grades' },
-      // { id: 'homework', label: 'Домашние задания', illustration: NAV_ILLUSTRATIONS.homework, href: '/homework' },
+      { id: 'schedule', label: 'Расписание', illustration: NAV_ILLUSTRATIONS.schedule, href: '/schedule' },
+      { id: 'grades', label: 'Оценки', illustration: NAV_ILLUSTRATIONS.grades, href: '/grades' },
+      { id: 'homework', label: 'Домашние задания', illustration: NAV_ILLUSTRATIONS.homework, href: '/homework' },
       { id: 'exams', label: 'Экзамены', illustration: NAV_ILLUSTRATIONS.exams, href: '/exams' },
-      { id: 'rating', label: 'Рейтинг', illustration: NAV_ILLUSTRATIONS.rating, href: '#' },
+      { id: 'rating', label: 'Рейтинг', illustration: NAV_ILLUSTRATIONS.rating, href: '/rating' },
     ],
   },
   {

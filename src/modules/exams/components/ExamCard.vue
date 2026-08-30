@@ -5,16 +5,11 @@ import { useSubjectIllustration } from '@/core/composables/useSubjectIllustratio
 
 const props = defineProps({
   item: { type: Object, required: true },
-  expanded: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['toggle', 'download', 'upload', 'view-work'])
+const emit = defineEmits(['download', 'upload', 'view-work'])
 
 const illustration = computed(() => useSubjectIllustration(props.item.subject))
-
-function onToggle() {
-  emit('toggle', props.item.id)
-}
 
 function onDownload() {
   emit('download', props.item)
@@ -34,7 +29,6 @@ function onViewWork() {
   <article
     class="exam-card"
     :class="{
-      'exam-card--expanded': expanded,
       [`exam-card--${item.status}`]: true,
       'exam-card--critical': item.urgency?.id === 'critical',
       'exam-card--approaching': item.urgency?.id === 'approaching',
@@ -44,12 +38,7 @@ function onViewWork() {
       '--subject-bg': `${illustration.color || '#8b5cf6'}29`,
     }"
   >
-    <button
-      type="button"
-      class="exam-card__summary"
-      :aria-expanded="expanded"
-      @click="onToggle"
-    >
+    <div class="exam-card__summary">
       <span class="exam-card__cover" aria-hidden="true">
         <BaseIcon
           :name="illustration.name"
@@ -110,35 +99,20 @@ function onViewWork() {
         {{ item.gradeLabel }}
       </span>
 
-      <BaseIcon
-        name="chevron-down"
-        :size="18"
-        class="exam-card__chevron"
-        :class="{ 'exam-card__chevron--open': expanded }"
-      />
-    </button>
+    </div>
 
     <div class="exam-card__footer">
       <div class="exam-card__deadline" :class="`exam-card__deadline--${item.deadlineTone}`">
         <BaseIcon name="calendar-03" :size="18" />
-        <div>
-          <p class="exam-card__deadline-date">
-            {{
-              item.status === 'checked' || item.status === 'uploaded'
-                ? `Конечная дата: ${item.deadlineLabel}`
-                : `До ${item.deadlineLabel}`
-            }}
-          </p>
-          <BaseTooltip
-            text="Зелёный — есть запас, жёлтый — 1–2 дня, красный — сегодня или срок прошёл"
-            placement="top"
-          >
-            <p class="exam-card__deadline-hint">{{ item.deadlineHint }}</p>
-          </BaseTooltip>
-        </div>
+        <BaseTooltip
+          text="Зелёный — есть запас, жёлтый — 1–2 дня, красный — сегодня или срок прошёл"
+          placement="top"
+        >
+          <p class="exam-card__deadline-hint">{{ item.deadlineHint }}</p>
+        </BaseTooltip>
       </div>
 
-      <div class="exam-card__actions" @click.stop>
+      <div class="exam-card__actions">
         <BaseButton
           v-if="item.canDownload"
           variant="secondary"
@@ -174,44 +148,7 @@ function onViewWork() {
             Загрузить
           </BaseButton>
         </BaseTooltip>
-
-        <p v-if="item.status === 'uploaded'" class="exam-card__uploaded-label">
-          <BaseIcon name="check-circle" :size="18" />
-          Работа загружена
-        </p>
       </div>
-    </div>
-
-    <div v-if="expanded" class="exam-card__details">
-      <div v-if="item.program" class="exam-card__block">
-        <p class="exam-card__details-label">Программа</p>
-        <p class="exam-card__description">{{ item.program }}</p>
-      </div>
-
-      <div v-if="item.materials?.length" class="exam-card__materials">
-        <p class="exam-card__details-label">Материалы</p>
-        <ul>
-          <li v-for="file in item.materials" :key="file.name">{{ file.name }}</li>
-        </ul>
-      </div>
-
-      <div v-if="item.recommendations" class="exam-card__block">
-        <p class="exam-card__details-label">Рекомендации</p>
-        <p class="exam-card__description">{{ item.recommendations }}</p>
-      </div>
-
-      <div
-        v-if="item.teacherComment"
-        class="exam-card__comment"
-      >
-        <p class="exam-card__details-label">Комментарий преподавателя</p>
-        <p>{{ item.teacherComment }}</p>
-      </div>
-
-      <p v-if="item.uploadedFileName" class="exam-card__file">
-        Файл работы: {{ item.uploadedFileName }}
-        <template v-if="item.submittedLabel"> · загружен {{ item.submittedLabel }}</template>
-      </p>
     </div>
   </article>
 </template>
@@ -235,11 +172,6 @@ function onViewWork() {
     border-color: $color-primary-muted;
   }
 
-  &--expanded {
-    box-shadow: $shadow-card;
-    border-color: $color-primary-muted;
-  }
-
   &--critical {
     border-color: $color-error-light;
   }
@@ -254,16 +186,6 @@ function onViewWork() {
     gap: $space-4;
     width: 100%;
     padding: $space-4;
-    border: none;
-    background: transparent;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    color: inherit;
-
-    &:focus-visible {
-      @include focus-ring;
-    }
   }
 
   &__cover {
@@ -383,17 +305,6 @@ function onViewWork() {
     }
   }
 
-  &__chevron {
-    flex-shrink: 0;
-    margin-top: $space-1;
-    color: $color-text-muted;
-    transition: transform $transition-base;
-
-    &--open {
-      transform: rotate(180deg);
-    }
-  }
-
   &__footer {
     display: flex;
     flex-wrap: wrap;
@@ -423,13 +334,6 @@ function onViewWork() {
     }
   }
 
-  &__deadline-date {
-    margin: 0;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-text-primary;
-  }
-
   &__deadline-hint {
     margin: 0;
     font-size: $font-size-xs;
@@ -444,62 +348,6 @@ function onViewWork() {
     justify-content: flex-end;
     gap: $space-2;
     margin-left: auto;
-  }
-
-  &__uploaded-label {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-2;
-    margin: 0;
-    font-size: $font-size-sm;
-    font-weight: $font-weight-semibold;
-    color: $color-success;
-  }
-
-  &__details {
-    display: flex;
-    flex-direction: column;
-    gap: $space-3;
-    padding: 0 $space-4 $space-4;
-  }
-
-  &__description {
-    margin: 0;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    line-height: $line-height-base;
-  }
-
-  &__details-label {
-    margin: 0 0 $space-1;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-bold;
-    color: $color-text-muted;
-  }
-
-  &__materials ul {
-    margin: 0;
-    padding-left: $space-5;
-    font-size: $font-size-sm;
-    color: $color-text-primary;
-  }
-
-  &__comment {
-    padding: $space-3;
-    border-radius: $radius-md;
-    background-color: $color-bg-muted;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-
-    p:last-child {
-      margin: 0;
-    }
-  }
-
-  &__file {
-    margin: 0;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
   }
 }
 

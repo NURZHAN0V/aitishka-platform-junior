@@ -13,9 +13,7 @@ import {
   EXAMS_VIEW_STORAGE_KEY,
   GRADE_SCALE,
   MOCK_EXAMS,
-  MOCK_RATING_PLACE,
   PERIOD_TABS,
-  RATING_GRADES_WEIGHT,
   STATUS_FILTERS,
   SUBJECT_LABELS,
   VIEW_TABS,
@@ -235,7 +233,6 @@ export function useExams(sourceItems = examItems) {
   const anchorDate = ref(startOfDay(now.value))
   const subjectFilter = ref('all')
   const statusFilter = ref('all')
-  const expandedId = ref(null)
   const uploadTargetId = ref(null)
 
   watch(period, (value) => saveStored(EXAMS_PERIOD_STORAGE_KEY, value))
@@ -343,14 +340,6 @@ export function useExams(sourceItems = examItems) {
       })
   })
 
-  const upcomingItems = computed(() =>
-    periodItems.value
-      .map(enrichItem)
-      .filter((item) => item.canUpload)
-      .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-      .slice(0, 3),
-  )
-
   const subjectSummaries = computed(() => {
     const map = new Map()
 
@@ -406,41 +395,6 @@ export function useExams(sourceItems = examItems) {
     () => !isEmptyPeriod.value && filteredItems.value.length === 0,
   )
 
-  const checkedExams = computed(() => allItems.value.filter((item) => item.status === 'checked'))
-  const examAverage = computed(() => averageScores(checkedExams.value))
-  const ratingFromGrades = computed(() => {
-    if (examAverage.value == null) return null
-    const normalized = ((examAverage.value - 2) / 3) * 100
-    return Math.round(Math.min(100, Math.max(0, normalized)) * RATING_GRADES_WEIGHT)
-  })
-
-  const submittedCount = computed(
-    () => allItems.value.filter((item) => item.status === 'uploaded' || item.status === 'checked').length,
-  )
-
-  const motivation = computed(() => ({
-    averageLabel: formatAverage(examAverage.value),
-    checkedCount: checkedExams.value.length,
-    submittedCount: submittedCount.value,
-    totalCount: allItems.value.length,
-    ratingFromGrades: ratingFromGrades.value,
-    rank: MOCK_RATING_PLACE.rank,
-    rankTotal: MOCK_RATING_PLACE.total,
-    ratingWeightPercent: Math.round(RATING_GRADES_WEIGHT * 100),
-  }))
-
-  const periodCounts = computed(() => ({
-    awaiting: statusCounts.value.awaiting,
-    uploaded: statusCounts.value.uploaded,
-    checked: statusCounts.value.checked,
-    missed: statusCounts.value.missed,
-    urgent: periodItems.value.filter((item) => {
-      const urgency = urgencyMeta(item, now.value)
-      return urgency?.id === 'critical' || urgency?.id === 'approaching'
-    }).length,
-    total: statusCounts.value.all,
-  }))
-
   const uploadTarget = computed(() => {
     if (!uploadTargetId.value) return null
     const item = allItems.value.find((row) => row.id === uploadTargetId.value)
@@ -450,70 +404,41 @@ export function useExams(sourceItems = examItems) {
   function setPeriod(next) {
     if (!VALID_PERIODS.has(next)) return
     period.value = next
-    expandedId.value = null
   }
 
   function setViewMode(next) {
     if (!VALID_VIEWS.has(next)) return
     viewMode.value = next
-    expandedId.value = null
   }
 
   function setSubjectFilter(value) {
     subjectFilter.value = value
-    expandedId.value = null
   }
 
   function setStatusFilter(next) {
     if (!VALID_STATUS_FILTERS.has(next)) return
     statusFilter.value = next
-    expandedId.value = null
-  }
-
-  function selectStatus(next) {
-    setStatusFilter(next)
-    setViewMode('detailed')
   }
 
   function goToPrevPeriod() {
     if (period.value !== 'month') return
     anchorDate.value = addMonths(anchorDate.value, -1)
-    expandedId.value = null
   }
 
   function goToNextPeriod() {
     if (period.value !== 'month') return
     anchorDate.value = addMonths(anchorDate.value, 1)
-    expandedId.value = null
   }
 
   function goToCurrentPeriod() {
     now.value = new Date()
     anchorDate.value = startOfDay(now.value)
-    expandedId.value = null
-  }
-
-  function toggleItem(id) {
-    expandedId.value = expandedId.value === id ? null : id
-  }
-
-  function openExam(id) {
-    const item = allItems.value.find((row) => row.id === id)
-    if (!item) return
-    subjectFilter.value = 'all'
-    statusFilter.value = 'all'
-    viewMode.value = 'detailed'
-    if (period.value === 'month' && !inSelectedPeriod(item)) {
-      period.value = 'all'
-    }
-    expandedId.value = id
   }
 
   function openSubject(subject) {
     subjectFilter.value = subject
     statusFilter.value = 'all'
     viewMode.value = 'detailed'
-    expandedId.value = null
   }
 
   function openUpload(id) {
@@ -541,7 +466,6 @@ export function useExams(sourceItems = examItems) {
     closeUpload()
     statusFilter.value = 'uploaded'
     viewMode.value = 'detailed'
-    expandedId.value = id
     return true
   }
 
@@ -578,14 +502,10 @@ export function useExams(sourceItems = examItems) {
     viewMode,
     subjectFilter,
     statusFilter,
-    expandedId,
     periodLabel,
     statusTabs,
     filteredItems,
     subjectSummaries,
-    upcomingItems,
-    periodCounts,
-    motivation,
     isEmptyPeriod,
     isEmptyFilter,
     uploadTarget,
@@ -593,12 +513,9 @@ export function useExams(sourceItems = examItems) {
     setViewMode,
     setSubjectFilter,
     setStatusFilter,
-    selectStatus,
     goToPrevPeriod,
     goToNextPeriod,
     goToCurrentPeriod,
-    toggleItem,
-    openExam,
     openSubject,
     openUpload,
     closeUpload,

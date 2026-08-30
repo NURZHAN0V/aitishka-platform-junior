@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import { BaseIcon } from '@/core/components/ui'
 import { WIDGET_ILLUSTRATIONS } from '@/core/constants/illustrations'
 import { RATING_WIDGET_MOCK } from '../constants/widgets.js'
@@ -94,7 +95,7 @@ const visibleLeaderboard = computed(() =>
             </tr>
           </tbody>
         </table>
-        <a :href="linkHref" class="home-rating-widget__link">Вся таблица →</a>
+        <RouterLink :to="linkHref" class="home-rating-widget__link">Вся таблица →</RouterLink>
       </section>
     </div>
   </article>

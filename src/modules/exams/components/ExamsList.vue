@@ -8,12 +8,11 @@ const props = defineProps({
   viewMode: { type: String, required: true },
   items: { type: Array, default: () => [] },
   subjectSummaries: { type: Array, default: () => [] },
-  expandedId: { type: String, default: null },
   isEmptyPeriod: { type: Boolean, default: false },
   isEmptyFilter: { type: Boolean, default: false },
 })
 
-defineEmits(['toggle', 'download', 'upload', 'view-work', 'open-subject'])
+defineEmits(['download', 'upload', 'view-work', 'open-subject'])
 
 const emptyTitle = computed(() => {
   if (props.isEmptyFilter) return 'Нет экзаменов по выбранным фильтрам'
@@ -64,9 +63,6 @@ function subjectIcon(subject) {
               <template v-if="row.openCount">
                 · {{ row.openCount }} можно сдать
               </template>
-              <template v-else-if="row.nearest">
-                · ближайший до {{ row.nearest.deadlineLabel }}
-              </template>
             </p>
             <div class="exams-list__subject-chips">
               <BaseChip
@@ -100,8 +96,6 @@ function subjectIcon(subject) {
         v-for="item in items"
         :key="item.id"
         :item="item"
-        :expanded="expandedId === item.id"
-        @toggle="$emit('toggle', $event)"
         @download="$emit('download', $event)"
         @upload="$emit('upload', $event)"
         @view-work="$emit('view-work', $event)"
