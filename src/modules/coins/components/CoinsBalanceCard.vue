@@ -144,25 +144,9 @@ defineProps({
   }
 }
 
-@media (max-width: 720px) {
+@include media-tablet-down {
   .coins-balance {
-    padding: $space-5 $space-5;
-    flex-direction: column;
-    align-items: stretch;
-
-    &__main {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    &__icon {
-      margin-block: -3.5rem;
-      transform: translateY(-1.25rem);
-    }
-
-    &__cta {
-      width: 100%;
-    }
+    display: none;
   }
 }
 </style>

@@ -455,7 +455,7 @@ onUnmounted(() => {
     }
 
     &__greeting {
-      font-size: $font-size-lg;
+      display: none;
     }
   }
 }

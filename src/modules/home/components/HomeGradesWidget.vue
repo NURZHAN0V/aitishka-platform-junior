@@ -82,6 +82,12 @@ defineProps({
     border-radius: $radius-lg;
     background-color: $color-bg-card;
     box-shadow: $shadow-sm;
+
+    @include media-phone {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      gap: $space-3 0;
+    }
   }
 
   &__summary {
@@ -90,12 +96,21 @@ defineProps({
     justify-content: center;
     min-width: 0;
     padding-right: $space-2;
+
+    @include media-phone {
+      padding-right: 0;
+    }
   }
 
   &__divider {
     align-self: stretch;
     width: 1px;
     background-color: $color-border;
+
+    @include media-phone {
+      width: 100%;
+      height: 1px;
+    }
   }
 
   &__summary-label {
@@ -146,6 +161,12 @@ defineProps({
     min-height: 0;
     height: 100%;
     padding-left: $space-1;
+
+    @include media-phone {
+      height: auto;
+      min-height: 10rem;
+      padding-left: 0;
+    }
   }
 
   &__footer {

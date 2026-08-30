@@ -40,6 +40,7 @@ const {
   >
     <div class="grades-view">
       <GradesSummary
+        v-if="!isCompactGrades"
         :average-label="averageLabel"
         :average-tone="averageTone"
         :average-qualitative="averageQualitative"
