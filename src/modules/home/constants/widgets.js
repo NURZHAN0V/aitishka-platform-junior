@@ -19,7 +19,7 @@ export const RATING_WIDGET_MOCK = {
 export const HOMEWORK_WIDGET_MOCK = {
   pending: 2,
   overdue: 1,
-  linkHref: '#',
+  linkHref: '#', // '/homework' — раздел временно скрыт из навигации
 }
 
 export const STREAKS_WIDGET_MOCK = {
@@ -33,7 +33,7 @@ export const GRADES_WIDGET_MOCK = {
   attendancePercent: 86,
   periodLabel: 'За текущую неделю',
   statusLabel: 'Хорошо!',
-  linkHref: '#',
+  linkHref: '#', // '/grades' — раздел временно скрыт из навигации
   chartData: [
     { label: 'Пн', value: 100 },
     { label: 'Вт', value: 100 },

@@ -99,13 +99,13 @@ onUnmounted(() => {
     <nav v-else-if="breadcrumbs.length" class="app-header__breadcrumbs" aria-label="Хлебные крошки">
       <template v-for="(crumb, index) in breadcrumbs" :key="index">
         <span v-if="index > 0" class="app-header__sep">→</span>
-        <a
+        <RouterLink
           v-if="crumb.href"
-          :href="crumb.href"
+          :to="crumb.href"
           class="app-header__crumb app-header__crumb--link"
         >
           {{ crumb.label }}
-        </a>
+        </RouterLink>
         <span v-else class="app-header__crumb">{{ crumb.label }}</span>
       </template>
     </nav>

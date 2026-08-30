@@ -1,7 +1,9 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 import { NAV_ILLUSTRATIONS } from '@/core/constants/illustrations'
 import { BaseIcon, BaseTooltip } from '@/core/components/ui'
+import campLogo from '@/assets/images/illustrations/brand/it-sochi-camp-logo.png'
 
 const props = defineProps({
   activeRoute: {
@@ -21,10 +23,10 @@ const navGroups = [
     title: 'Учёба',
     illustration: NAV_ILLUSTRATIONS.homework,
     items: [
-      { id: 'schedule', label: 'Расписание', illustration: NAV_ILLUSTRATIONS.schedule, href: '#' },
-      { id: 'grades', label: 'Оценки', illustration: NAV_ILLUSTRATIONS.grades, href: '#' },
-      { id: 'homework', label: 'Домашние задания', illustration: NAV_ILLUSTRATIONS.homework, href: '#' },
-      { id: 'exams', label: 'Экзамены', illustration: NAV_ILLUSTRATIONS.exams, href: '#' },
+      // { id: 'schedule', label: 'Расписание', illustration: NAV_ILLUSTRATIONS.schedule, href: '/schedule' },
+      // { id: 'grades', label: 'Оценки', illustration: NAV_ILLUSTRATIONS.grades, href: '/grades' },
+      // { id: 'homework', label: 'Домашние задания', illustration: NAV_ILLUSTRATIONS.homework, href: '/homework' },
+      { id: 'exams', label: 'Экзамены', illustration: NAV_ILLUSTRATIONS.exams, href: '/exams' },
       { id: 'rating', label: 'Рейтинг', illustration: NAV_ILLUSTRATIONS.rating, href: '#' },
     ],
   },
@@ -121,6 +123,10 @@ const navExpandedMounted = ref(!collapsed.value)
 const expandedGroups = ref(new Set(sidebarState.expandedGroups))
 const openFlyoutId = ref(null)
 let hideFlyoutTimer = null
+
+function isInternalHref(href) {
+  return typeof href === 'string' && href.startsWith('/')
+}
 
 function findGroupIdForRoute(routeId) {
   const group = navGroups.find((g) => g.items.some((item) => item.id === routeId))
@@ -286,12 +292,12 @@ function scheduleHideFlyout() {
   >
     <div class="app-sidebar__brand" @click="onCollapsedBackgroundClick">
       <div class="app-sidebar__brand-mark">
-        <BaseIcon
+        <img
           v-show="!collapsed || !sidebarHovered"
-          name="logo-cube"
-          type="avif"
-          :size="44"
-          label="IT ШКОЛА Сочи"
+          :src="campLogo"
+          alt="IT ШКОЛА Сочи"
+          width="44"
+          height="44"
           class="app-sidebar__logo-icon"
         />
 
@@ -362,8 +368,10 @@ function scheduleHideFlyout() {
             :text="group.items[0].label"
             placement="right"
           >
-            <a
-              :href="group.items[0].href"
+            <component
+              :is="isInternalHref(group.items[0].href) ? RouterLink : 'a'"
+              :to="isInternalHref(group.items[0].href) ? group.items[0].href : undefined"
+              :href="isInternalHref(group.items[0].href) ? undefined : group.items[0].href"
               class="app-sidebar__section-btn"
               :class="{ 'app-sidebar__section-btn--active': activeRoute === group.items[0].id }"
               :aria-label="group.items[0].label"
@@ -376,7 +384,7 @@ function scheduleHideFlyout() {
                 class="app-sidebar__nav-icon"
                 :label="group.items[0].label"
               />
-            </a>
+            </component>
           </BaseTooltip>
 
           <div
@@ -413,16 +421,18 @@ function scheduleHideFlyout() {
               @pointerleave="scheduleHideFlyout"
             >
               <div class="app-sidebar__flyout-panel">
-                <a
+                <component
+                  :is="isInternalHref(item.href) ? RouterLink : 'a'"
                   v-for="item in group.items"
                   :key="item.id"
-                  :href="item.href"
+                  :to="isInternalHref(item.href) ? item.href : undefined"
+                  :href="isInternalHref(item.href) ? undefined : item.href"
                   class="app-sidebar__flyout-link"
                   :class="{ 'app-sidebar__flyout-link--active': activeRoute === item.id }"
                   role="menuitem"
                 >
                   {{ item.label }}
-                </a>
+                </component>
               </div>
             </div>
           </div>
@@ -445,10 +455,12 @@ function scheduleHideFlyout() {
       >
         <template v-for="group in navGroups" :key="`expanded-${group.id}`">
           <div v-if="!group.title" class="app-sidebar__group">
-            <a
+            <component
+              :is="isInternalHref(item.href) ? RouterLink : 'a'"
               v-for="item in group.items"
               :key="item.id"
-              :href="item.href"
+              :to="isInternalHref(item.href) ? item.href : undefined"
+              :href="isInternalHref(item.href) ? undefined : item.href"
               class="app-sidebar__link"
               :class="{ 'app-sidebar__link--active': activeRoute === item.id }"
               :tabindex="collapsed ? -1 : 0"
@@ -461,7 +473,7 @@ function scheduleHideFlyout() {
                 :label="item.label"
               />
               <span class="app-sidebar__link-label">{{ item.label }}</span>
-            </a>
+            </component>
           </div>
 
           <div v-else class="app-sidebar__group app-sidebar__group--collapsible">
@@ -485,10 +497,12 @@ function scheduleHideFlyout() {
               v-show="isExpanded(group.id)"
               class="app-sidebar__spoiler-content"
             >
-              <a
+              <component
+                :is="isInternalHref(item.href) ? RouterLink : 'a'"
                 v-for="item in group.items"
                 :key="item.id"
-                :href="item.href"
+                :to="isInternalHref(item.href) ? item.href : undefined"
+                :href="isInternalHref(item.href) ? undefined : item.href"
                 class="app-sidebar__link app-sidebar__link--nested"
                 :class="{ 'app-sidebar__link--active': activeRoute === item.id }"
                 :tabindex="collapsed ? -1 : 0"
@@ -501,7 +515,7 @@ function scheduleHideFlyout() {
                   :label="item.label"
                 />
                 <span class="app-sidebar__link-label">{{ item.label }}</span>
-              </a>
+              </component>
             </div>
           </div>
         </template>
@@ -593,6 +607,9 @@ function scheduleHideFlyout() {
   &__logo-icon {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     flex-shrink: 0;
   }
 
@@ -789,6 +806,9 @@ function scheduleHideFlyout() {
   }
 
   &__flyout-panel {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
     min-width: 240px;
     padding: $space-2;
     border: 1px solid $color-border-light;
@@ -808,7 +828,7 @@ function scheduleHideFlyout() {
     white-space: nowrap;
     transition: background-color $transition-fast, color $transition-fast;
 
-    &:hover {
+    &:hover:not(&--active) {
       background-color: $color-bg-muted;
     }
 
@@ -816,6 +836,11 @@ function scheduleHideFlyout() {
       color: $color-primary;
       font-weight: $font-weight-semibold;
       background-color: $color-primary-light;
+
+      &:hover {
+        color: $color-primary;
+        background-color: $color-bg-muted;
+      }
     }
   }
 

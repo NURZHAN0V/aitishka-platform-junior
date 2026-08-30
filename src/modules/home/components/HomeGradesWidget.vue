@@ -1,4 +1,5 @@
 <script setup>
+// import { RouterLink } from 'vue-router' // раздел «Оценки» временно скрыт
 import { GRADES_WIDGET_MOCK } from '../constants/widgets.js'
 import AttendanceLineChart from './AttendanceLineChart.vue'
 
@@ -35,9 +36,11 @@ defineProps({
       </section>
     </div>
 
+    <!-- Скрыто: переход в раздел «Оценки»
     <footer class="home-grades-widget__footer">
-      <a :href="linkHref" class="home-grades-widget__link">Подробнее →</a>
+      <RouterLink :to="linkHref" class="home-grades-widget__link">Подробнее →</RouterLink>
     </footer>
+    -->
   </article>
 </template>
 

@@ -24,6 +24,10 @@ defineProps({
     default: 'md',
     validator: (v) => ['sm', 'md'].includes(v),
   },
+  toned: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 defineEmits(['click'])
@@ -37,7 +41,7 @@ defineEmits(['click'])
       `base-chip--${variant}`,
       `base-chip--${size}`,
       `base-chip--${mode}`,
-      { 'base-chip--active': active },
+      { 'base-chip--active': active, 'base-chip--toned': toned },
     ]"
     :type="mode === 'filter' ? 'button' : undefined"
     @click="mode === 'filter' ? $emit('click', $event) : undefined"
@@ -48,6 +52,7 @@ defineEmits(['click'])
 </template>
 
 <style lang="scss" scoped>
+@use 'sass:map';
 @use '@/assets/styles/tokens' as *;
 @use '@/assets/styles/mixins' as *;
 
@@ -101,6 +106,29 @@ defineEmits(['click'])
     background: $gradient-primary;
     color: $color-text-inverse;
     border-color: transparent;
+  }
+
+  @each $status, $config in $homework-status-colors {
+    &--filter.base-chip--toned.base-chip--#{$status}:not(.base-chip--active) {
+      @include homework-status-chip($status);
+      border-color: transparent;
+
+      .base-chip__count {
+        background-color: rgba(map.get($config, text), 0.16);
+        color: map.get($config, text);
+      }
+    }
+
+    &--filter.base-chip--toned.base-chip--#{$status}.base-chip--active {
+      background: map.get($config, text);
+      color: $color-text-inverse;
+      border-color: transparent;
+
+      .base-chip__count {
+        background-color: rgba(255, 255, 255, 0.25);
+        color: $color-text-inverse;
+      }
+    }
   }
 
   &__count {

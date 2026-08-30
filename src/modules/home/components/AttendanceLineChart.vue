@@ -6,9 +6,25 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  minValue: {
+    type: Number,
+    default: 0,
+  },
   maxValue: {
     type: Number,
     default: 100,
+  },
+  yTicks: {
+    type: Array,
+    default: () => [0, 25, 50, 75, 100],
+  },
+  valueSuffix: {
+    type: String,
+    default: '%',
+  },
+  ariaLabel: {
+    type: String,
+    default: 'График посещаемости',
   },
 })
 
@@ -29,7 +45,28 @@ const TOOLTIP = {
 
 const ACTIVE_DOT_R = 6
 
-const yTicks = [0, 25, 50, 75, 100]
+const valueSpan = computed(() => {
+  const span = props.maxValue - props.minValue
+  return span === 0 ? 1 : span
+})
+
+function hasNumericValue(value) {
+  return typeof value === 'number' && Number.isFinite(value)
+}
+
+function valueRatio(value) {
+  return (value - props.minValue) / valueSpan.value
+}
+
+function formatValue(value) {
+  if (value == null || Number.isNaN(value)) return ''
+  if (Number.isInteger(value)) return String(value)
+  return String(Math.round(value * 100) / 100)
+}
+
+function displayValue(value) {
+  return `${formatValue(value)}${props.valueSuffix}`
+}
 
 const figureRef = ref(null)
 const chartSize = ref({ width: 300, height: 168 })
@@ -56,19 +93,25 @@ const points = computed(() => {
   const { paddingLeft, paddingTop } = chart.value
 
   return props.data.map((item, index) => {
-    const ratio = item.value / props.maxValue
+    const plottable = hasNumericValue(item.value)
+    const ratio = plottable ? Math.min(1, Math.max(0, valueRatio(item.value))) : 0
     return {
+      index,
       x: paddingLeft + step * index,
       y: paddingTop + plotHeight.value * (1 - ratio),
       label: item.label,
       value: item.value,
+      plottable,
     }
   })
 })
 
+const plotPoints = computed(() => points.value.filter((point) => point.plottable))
+
 const activePoint = computed(() => {
   if (hoveredIndex.value == null) return null
-  return points.value[hoveredIndex.value] ?? null
+  const point = points.value[hoveredIndex.value]
+  return point?.plottable ? point : null
 })
 
 const tooltipPosition = computed(() => {
@@ -93,31 +136,29 @@ const tooltipPosition = computed(() => {
   }
 })
 
-const linePath = computed(() => {
-  if (!points.value.length) return ''
-
-  return points.value
+const linePath = computed(() =>
+  plotPoints.value
     .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' ')
-})
+    .join(' '),
+)
 
 const areaPath = computed(() => {
-  if (!points.value.length) return ''
+  if (plotPoints.value.length < 2) return ''
 
   const bottom = chart.value.height - chart.value.paddingBottom
-  const first = points.value[0]
-  const last = points.value[points.value.length - 1]
+  const first = plotPoints.value[0]
+  const last = plotPoints.value[plotPoints.value.length - 1]
 
   return [
     `M ${first.x} ${bottom}`,
-    ...points.value.map((point) => `L ${point.x} ${point.y}`),
+    ...plotPoints.value.map((point) => `L ${point.x} ${point.y}`),
     `L ${last.x} ${bottom}`,
     'Z',
   ].join(' ')
 })
 
 function yPosition(tick) {
-  return chart.value.paddingTop + plotHeight.value * (1 - tick / props.maxValue)
+  return chart.value.paddingTop + plotHeight.value * (1 - valueRatio(tick))
 }
 
 function setHovered(index) {
@@ -129,21 +170,21 @@ function clearHovered() {
 }
 
 function onChartMove(event) {
-  if (!points.value.length) return
+  if (!plotPoints.value.length) return
 
   const svg = event.currentTarget
   const rect = svg.getBoundingClientRect()
   const scaleX = chart.value.width / rect.width
   const svgX = (event.clientX - rect.left) * scaleX
 
-  let nearest = 0
+  let nearest = plotPoints.value[0].index
   let minDistance = Infinity
 
-  points.value.forEach((point, index) => {
+  plotPoints.value.forEach((point) => {
     const distance = Math.abs(point.x - svgX)
     if (distance < minDistance) {
       minDistance = distance
-      nearest = index
+      nearest = point.index
     }
   })
 
@@ -153,10 +194,9 @@ function onChartMove(event) {
 function updateChartSize() {
   if (!figureRef.value) return
 
-  const { width, height } = figureRef.value.getBoundingClientRect()
   chartSize.value = {
-    width: Math.max(CHART_MIN_WIDTH, Math.round(width)),
-    height: Math.max(CHART_MIN_HEIGHT, Math.round(height)),
+    width: Math.max(CHART_MIN_WIDTH, Math.round(figureRef.value.clientWidth)),
+    height: Math.max(CHART_MIN_HEIGHT, Math.round(figureRef.value.clientHeight)),
   }
 }
 
@@ -181,7 +221,7 @@ onUnmounted(() => {
       :class="{ 'attendance-line-chart__svg--active': activePoint }"
       :viewBox="`0 0 ${chart.width} ${chart.height}`"
       role="img"
-      aria-label="График посещаемости"
+      :aria-label="ariaLabel"
       @mouseleave="clearHovered"
     >
       <g class="attendance-line-chart__grid" aria-hidden="true">
@@ -231,13 +271,13 @@ onUnmounted(() => {
 
       <g class="attendance-line-chart__dots">
         <circle
-          v-for="(point, index) in points"
-          :key="index"
+          v-for="point in plotPoints"
+          :key="point.index"
           class="attendance-line-chart__dot"
-          :class="{ 'attendance-line-chart__dot--active': hoveredIndex === index }"
+          :class="{ 'attendance-line-chart__dot--active': hoveredIndex === point.index }"
           :cx="point.x"
           :cy="point.y"
-          :r="hoveredIndex === index ? ACTIVE_DOT_R : 4.5"
+          :r="hoveredIndex === point.index ? ACTIVE_DOT_R : 4.5"
         />
       </g>
 
@@ -267,7 +307,7 @@ onUnmounted(() => {
           :y="tooltipPosition.y + 16"
           text-anchor="middle"
         >
-          {{ activePoint.value }}%
+          {{ displayValue(activePoint.value) }}
         </text>
         <text
           class="attendance-line-chart__tooltip-label"
@@ -302,16 +342,16 @@ onUnmounted(() => {
 
       <g class="attendance-line-chart__hits">
         <circle
-          v-for="(point, index) in points"
-          :key="`hit-${index}`"
+          v-for="point in plotPoints"
+          :key="`hit-${point.index}`"
           class="attendance-line-chart__hit"
           :cx="point.x"
           :cy="point.y"
           r="12"
           tabindex="0"
-          :aria-label="`${point.label}: ${point.value}%`"
-          @mouseenter="setHovered(index)"
-          @focus="setHovered(index)"
+          :aria-label="`${point.label}: ${displayValue(point.value)}`"
+          @mouseenter="setHovered(point.index)"
+          @focus="setHovered(point.index)"
           @blur="clearHovered"
         />
       </g>
@@ -423,19 +463,23 @@ onUnmounted(() => {
   &__tooltip-box {
     fill: $color-bg-card;
     stroke: $color-border;
+    fill-opacity: 1;
     filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.12));
   }
 
   &__tooltip-value {
     fill: $color-primary;
+    color: $color-primary;
     font-size: 11px;
     font-weight: $font-weight-bold;
     font-family: $font-family-base;
   }
 
   &__tooltip-label {
-    fill: $color-text-muted;
+    fill: $color-text-secondary;
+    color: $color-text-secondary;
     font-size: 9px;
+    font-weight: $font-weight-semibold;
     font-family: $font-family-base;
   }
 }

@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted, watch } from 'vue'
 import BaseIcon from './BaseIcon.vue'
+import BaseTooltip from './BaseTooltip.vue'
 
 const props = defineProps({
   modelValue: {
@@ -14,7 +15,7 @@ const props = defineProps({
   size: {
     type: String,
     default: 'md',
-    validator: (v) => ['sm', 'md', 'lg'].includes(v),
+    validator: (v) => ['sm', 'md', 'lg', 'xl'].includes(v),
   },
   closable: {
     type: Boolean,
@@ -23,6 +24,18 @@ const props = defineProps({
   closeOnOverlay: {
     type: Boolean,
     default: true,
+  },
+  closeIcon: {
+    type: String,
+    default: 'x-close',
+  },
+  closeLabel: {
+    type: String,
+    default: 'Закрыть',
+  },
+  closeTooltip: {
+    type: String,
+    default: '',
   },
 })
 
@@ -68,17 +81,26 @@ onUnmounted(() => {
       <div v-if="modelValue" class="base-modal" role="dialog" aria-modal="true">
         <div class="base-modal__overlay" @click="onOverlayClick" />
         <div class="base-modal__content" :class="`base-modal__content--${size}`">
-          <header v-if="title || closable" class="base-modal__header">
-            <h2 v-if="title" class="base-modal__title">{{ title }}</h2>
-            <button
+          <header v-if="title || $slots['title-extra'] || closable" class="base-modal__header">
+            <div v-if="title || $slots['title-extra']" class="base-modal__heading">
+              <h2 v-if="title" class="base-modal__title">{{ title }}</h2>
+              <slot name="title-extra" />
+            </div>
+            <BaseTooltip
               v-if="closable"
-              type="button"
-              class="base-modal__close"
-              aria-label="Закрыть"
-              @click="close"
+              :text="closeTooltip || closeLabel"
+              placement="top"
+              :disabled="!closeTooltip"
             >
-              <BaseIcon name="x-close" :size="20" />
-            </button>
+              <button
+                type="button"
+                class="base-modal__close"
+                :aria-label="closeLabel"
+                @click="close"
+              >
+                <BaseIcon :name="closeIcon" :size="20" />
+              </button>
+            </BaseTooltip>
           </header>
           <div class="base-modal__body">
             <slot />
@@ -129,6 +151,16 @@ onUnmounted(() => {
     &--lg {
       max-width: 640px;
     }
+
+    &--xl {
+      display: flex;
+      flex-direction: column;
+      width: min(80vw, calc(100vw - #{$space-8}));
+      max-width: min(80vw, calc(100vw - #{$space-8}));
+      height: min(80vh, calc(100vh - #{$space-8}));
+      max-height: min(80vh, calc(100vh - #{$space-8}));
+      overflow: hidden;
+    }
   }
 
   &__header {
@@ -136,8 +168,21 @@ onUnmounted(() => {
     align-items: center;
     justify-content: space-between;
     gap: $space-4;
+    flex-shrink: 0;
     padding: $space-5 $space-6 $space-3;
     @include no-select;
+
+    :deep(.base-tooltip) {
+      flex-shrink: 0;
+    }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    min-width: 0;
+    flex: 1;
   }
 
   &__title {
@@ -173,6 +218,14 @@ onUnmounted(() => {
   &__body {
     padding: $space-3 $space-6 $space-6;
     color: $color-text-secondary;
+  }
+
+  &__content--xl &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
   }
 
   &__footer {
