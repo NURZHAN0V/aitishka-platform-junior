@@ -6,7 +6,7 @@ defineProps({
 
 <template>
   <div class="rating-table" aria-label="Рейтинг группы">
-    <div class="rating-table__scroll">
+    <div class="rating-table__scroll rating-table__desktop">
       <table class="rating-table__grid">
         <thead>
           <tr>
@@ -36,15 +36,44 @@ defineProps({
         </tbody>
       </table>
     </div>
+
+    <ul class="rating-table__cards" aria-label="Список рейтинга">
+      <li
+        v-for="row in rows"
+        :key="`card-${row.id}`"
+        class="rating-table__card"
+        :class="{ 'rating-table__card--current': row.isCurrent }"
+      >
+        <div class="rating-table__card-top">
+          <span class="rating-table__place">{{ row.rank }}</span>
+          <span class="rating-table__name">{{ row.fullName }}</span>
+          <span class="rating-table__points">{{ row.points }}</span>
+        </div>
+        <div class="rating-table__card-meta">
+          <span>Средний {{ row.avgLabel }}</span>
+          <span>ДЗ {{ row.homeworkOnTime }}/{{ row.homeworkTotal }}</span>
+        </div>
+      </li>
+    </ul>
   </div>
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .rating-table {
   &__scroll {
     overflow-x: auto;
+  }
+
+  &__cards {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    gap: $space-2;
   }
 
   &__grid {
@@ -78,43 +107,83 @@ defineProps({
       vertical-align: middle;
 
       &:first-child {
-        border-radius: $radius-sm 0 0 $radius-sm;
+        border-radius: $radius-md 0 0 $radius-md;
       }
 
       &:last-child {
-        border-radius: 0 $radius-sm $radius-sm 0;
+        border-radius: 0 $radius-md $radius-md 0;
         text-align: right;
       }
     }
   }
 
   &__place {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
     font-weight: $font-weight-bold;
   }
 
   &__name {
-    font-weight: $font-weight-semibold;
+    font-weight: $font-weight-medium;
   }
 
   &__points {
     font-weight: $font-weight-bold;
+    font-variant-numeric: tabular-nums;
   }
 
   &__row--current td {
     background: $color-primary-light;
     color: $color-primary;
   }
-}
 
-@media (max-width: 720px) {
-  .rating-table__grid {
+  &__card {
+    padding: $space-3 $space-4;
+    border-radius: $radius-lg;
+    background: $color-bg-muted;
+
+    &--current {
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+  }
+
+  &__card-top {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    min-height: $touch-target-min;
+  }
+
+  &__card-top .rating-table__name {
+    flex: 1;
+    min-width: 0;
+    @include truncate;
+  }
+
+  &__card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2 $space-4;
+    margin-top: $space-1;
+    padding-left: calc(1.75rem + #{$space-3});
     font-size: $font-size-xs;
-    min-width: 480px;
+    color: $color-text-secondary;
+  }
 
-    th,
-    td {
-      padding-left: $space-2;
-      padding-right: $space-2;
+  &__card--current &__card-meta {
+    color: $color-primary;
+  }
+
+  @include media-phone {
+    &__desktop {
+      display: none;
+    }
+
+    &__cards {
+      display: flex;
     }
   }
 }

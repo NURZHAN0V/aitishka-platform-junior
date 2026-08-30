@@ -114,7 +114,7 @@ onUnmounted(() => {
 @use '@/assets/styles/mixins' as *;
 
 .profile-menu {
-  width: 280px;
+  width: min(280px, calc(100vw - #{$space-6}));
   padding: $space-2;
   border-radius: $radius-xl;
   background-color: $color-bg-card;

@@ -31,6 +31,7 @@ const emit = defineEmits(['update:directionFilter'])
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .coins-history-toolbar {
   display: flex;
@@ -55,19 +56,17 @@ const emit = defineEmits(['update:directionFilter'])
 
     :deep(.base-chip) {
       flex-shrink: 0;
+      min-height: $touch-target-min;
     }
   }
-}
 
-@media (max-width: 720px) {
-  .coins-history-toolbar {
+  @include media-tablet-down {
     flex-direction: column;
     align-items: stretch;
 
     &__filters {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding-bottom: $space-1;
+      @include chip-scroll-row;
+      width: 100%;
     }
   }
 }

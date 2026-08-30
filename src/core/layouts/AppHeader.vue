@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import ProfileMenu from './ProfileMenu.vue'
 import { BaseAvatar, BaseBadgeWrapper, BaseIcon } from '@/core/components/ui'
+import { useAppShell } from '@/core/composables/useAppShell.js'
 
 const props = defineProps({
   breadcrumbs: {
@@ -27,13 +28,27 @@ const props = defineProps({
   },
 })
 
+const { isDrawerMode, navOpen, toggleNav } = useAppShell()
+
 const firstName = computed(() => props.user.name.trim().split(/\s+/)[0] || 'студент')
+const shortName = computed(() => {
+  const parts = props.user.name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return 'Студент'
+  if (parts.length === 1) return parts[0]
+  return `${parts[0]} ${parts[1][0]}.`
+})
 
 const profileOpen = ref(false)
 const profileRef = ref(null)
+const isCoarsePointer = ref(false)
 
 let closeTimer = null
 let suppressHoverOpen = false
+
+function syncPointerMode() {
+  if (typeof window === 'undefined') return
+  isCoarsePointer.value = window.matchMedia('(pointer: coarse)').matches
+}
 
 function clearCloseTimer() {
   if (closeTimer) {
@@ -43,12 +58,13 @@ function clearCloseTimer() {
 }
 
 function openProfile() {
-  if (suppressHoverOpen) return
+  if (isCoarsePointer.value || suppressHoverOpen) return
   clearCloseTimer()
   profileOpen.value = true
 }
 
 function scheduleCloseProfile() {
+  if (isCoarsePointer.value) return
   clearCloseTimer()
   closeTimer = setTimeout(() => {
     profileOpen.value = false
@@ -82,7 +98,9 @@ function onClickOutside(event) {
 }
 
 onMounted(() => {
+  syncPointerMode()
   document.addEventListener('click', onClickOutside)
+  window.matchMedia('(pointer: coarse)').addEventListener?.('change', syncPointerMode)
 })
 
 onUnmounted(() => {
@@ -93,23 +111,37 @@ onUnmounted(() => {
 
 <template>
   <header class="app-header">
-    <h1 v-if="greeting" class="app-header__greeting">
-      Привет, {{ firstName }}! 👋
-    </h1>
-    <nav v-else-if="breadcrumbs.length" class="app-header__breadcrumbs" aria-label="Хлебные крошки">
-      <template v-for="(crumb, index) in breadcrumbs" :key="index">
-        <span v-if="index > 0" class="app-header__sep">→</span>
-        <RouterLink
-          v-if="crumb.href"
-          :to="crumb.href"
-          class="app-header__crumb app-header__crumb--link"
-        >
-          {{ crumb.label }}
-        </RouterLink>
-        <span v-else class="app-header__crumb">{{ crumb.label }}</span>
-      </template>
-    </nav>
-    <div v-else class="app-header__spacer" />
+    <div class="app-header__start">
+      <button
+        v-if="isDrawerMode"
+        type="button"
+        class="app-header__menu-btn"
+        :aria-expanded="navOpen"
+        aria-controls="app-sidebar-nav"
+        aria-label="Открыть меню"
+        @click="toggleNav"
+      >
+        <BaseIcon name="menu-01" :size="22" />
+      </button>
+
+      <h1 v-if="greeting" class="app-header__greeting">
+        Привет, {{ firstName }}! 👋
+      </h1>
+      <nav v-else-if="breadcrumbs.length" class="app-header__breadcrumbs" aria-label="Хлебные крошки">
+        <template v-for="(crumb, index) in breadcrumbs" :key="index">
+          <span v-if="index > 0" class="app-header__sep">→</span>
+          <RouterLink
+            v-if="crumb.href"
+            :to="crumb.href"
+            class="app-header__crumb app-header__crumb--link"
+          >
+            {{ crumb.label }}
+          </RouterLink>
+          <span v-else class="app-header__crumb">{{ crumb.label }}</span>
+        </template>
+      </nav>
+      <div v-else class="app-header__spacer" />
+    </div>
 
     <div class="app-header__actions">
       <BaseBadgeWrapper
@@ -118,9 +150,12 @@ onUnmounted(() => {
         position="top-right"
         class="app-header__action-wrap"
       >
-        <RouterLink to="/market" class="app-header__coins app-header__action-block">
+        <RouterLink to="/market" class="app-header__coins app-header__action-block" :title="`${coins} монеток`">
           <BaseIcon name="coin-single" type="avif" :size="28" class="app-header__coins-icon" />
-          <span class="app-header__coins-value">{{ coins }} монеток</span>
+          <span class="app-header__coins-value">
+            <span class="app-header__coins-number">{{ coins }}</span>
+            <span class="app-header__coins-label"> монеток</span>
+          </span>
         </RouterLink>
       </BaseBadgeWrapper>
 
@@ -140,7 +175,8 @@ onUnmounted(() => {
         >
           <BaseAvatar :name="user.name" :src="user.avatar" size="sm" status="online" />
           <span class="app-header__profile-info">
-            <span class="app-header__name">{{ user.name }}</span>
+            <span class="app-header__name app-header__name--full">{{ user.name }}</span>
+            <span class="app-header__name app-header__name--short">{{ shortName }}</span>
             <span class="app-header__group">{{ user.group }}</span>
           </span>
           <BaseIcon
@@ -168,10 +204,40 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: $space-4;
+  gap: $space-3;
   min-height: $header-height;
   padding: $space-4 $space-6;
   flex-shrink: 0;
+
+  &__start {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__menu-btn {
+    @include flex-center;
+    @include touch-target;
+    @include press-scale(0.96);
+
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-md;
+    background-color: $color-bg-card;
+    color: $color-text-primary;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-bg-muted;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
 
   &__greeting {
     margin: 0;
@@ -179,6 +245,7 @@ onUnmounted(() => {
     font-weight: $font-weight-bold;
     line-height: $line-height-tight;
     color: $color-text-primary;
+    @include truncate;
     @include no-select;
   }
 
@@ -187,6 +254,7 @@ onUnmounted(() => {
     align-items: center;
     flex-wrap: wrap;
     gap: $space-2;
+    min-width: 0;
     font-size: $font-size-sm;
     color: $color-text-secondary;
     @include no-select;
@@ -194,6 +262,10 @@ onUnmounted(() => {
 
   &__sep {
     color: $color-text-muted;
+  }
+
+  &__crumb {
+    @include truncate;
   }
 
   &__crumb--link {
@@ -212,7 +284,8 @@ onUnmounted(() => {
   &__actions {
     display: flex;
     align-items: center;
-    gap: $space-5;
+    gap: $space-3;
+    flex-shrink: 0;
   }
 
   &__action-wrap {
@@ -228,6 +301,7 @@ onUnmounted(() => {
 
   &__coins {
     gap: 2px;
+    min-height: $touch-target-min;
     padding: $space-1 $space-2;
     border: 1px solid #fde68a;
     background-color: #fffbeb;
@@ -257,6 +331,10 @@ onUnmounted(() => {
     font-variant-numeric: tabular-nums;
   }
 
+  &__coins-number {
+    font-variant-numeric: tabular-nums;
+  }
+
   &__profile {
     position: relative;
     display: flex;
@@ -273,6 +351,7 @@ onUnmounted(() => {
 
   &__profile-trigger {
     gap: $space-3;
+    min-height: $touch-target-min;
     padding: $space-1 $space-2;
     border: none;
     background: transparent;
@@ -296,6 +375,7 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
+    min-width: 0;
   }
 
   &__name {
@@ -303,11 +383,19 @@ onUnmounted(() => {
     font-weight: $font-weight-semibold;
     color: $color-text-primary;
     transition: color $transition-base;
+    @include truncate;
+    max-width: 10rem;
+
+    &--short {
+      display: none;
+    }
   }
 
   &__group {
     font-size: $font-size-xs;
     color: $color-text-muted;
+    @include truncate;
+    max-width: 10rem;
   }
 
   &__chevron {
@@ -325,6 +413,50 @@ onUnmounted(() => {
     top: calc(100% + #{$space-2});
     right: 0;
     z-index: 100;
+    max-width: calc(100vw - #{$space-6});
+  }
+
+  @include media-tablet-down {
+    padding: $space-3 $space-4;
+    gap: $space-2;
+
+    &__greeting {
+      font-size: $font-size-xl;
+    }
+
+    &__actions {
+      gap: $space-2;
+    }
+
+    &__name--full {
+      display: none;
+    }
+
+    &__name--short {
+      display: block;
+    }
+
+    &__group {
+      display: none;
+    }
+
+    &__chevron {
+      display: none;
+    }
+  }
+
+  @include media-phone {
+    &__coins-label {
+      display: none;
+    }
+
+    &__breadcrumbs {
+      display: none;
+    }
+
+    &__greeting {
+      font-size: $font-size-lg;
+    }
   }
 }
 </style>

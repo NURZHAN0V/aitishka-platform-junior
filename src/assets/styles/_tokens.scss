@@ -234,6 +234,15 @@ $sidebar-width: 260px;
 $sidebar-width-collapsed: 72px;
 $header-height: 64px;
 
+// --- Breakpoints (mobile / tablet / laptop) ---
+
+$bp-phone: 640px;
+$bp-tablet: 900px;
+$bp-laptop: 1280px;
+
+// Минимальная зона нажатия для touch (iOS HIG / Material ≈ 44–48px)
+$touch-target-min: 44px;
+
 // --- Transitions ---
 
 $transition-fast: 150ms ease;

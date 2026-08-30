@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NAV_ILLUSTRATIONS } from '@/core/constants/illustrations'
 import { BaseIcon, BaseTooltip } from '@/core/components/ui'
+import { useAppShell } from '@/core/composables/useAppShell.js'
 import campLogo from '@/assets/images/brand/logo-it.svg'
 
 const props = defineProps({
@@ -11,6 +12,8 @@ const props = defineProps({
     default: 'home',
   },
 })
+
+const { navOpen, isDrawerMode, closeNav } = useAppShell()
 
 const navGroups = [
   {
@@ -116,6 +119,8 @@ function saveSidebarState(state) {
 const sidebarState = readSidebarState()
 
 const collapsed = ref(sidebarState.collapsed)
+/** В drawer всегда полный список — без collapsed flyouts. */
+const effectiveCollapsed = computed(() => (isDrawerMode.value ? false : collapsed.value))
 const sidebarHovered = ref(false)
 const isTransitioning = ref(false)
 const navCollapsedMounted = ref(collapsed.value)
@@ -187,7 +192,19 @@ onMounted(() => {
     navCollapsedMounted.value = true
     navExpandedMounted.value = true
   })
+  document.addEventListener('keydown', onDrawerKeydown)
 })
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', onDrawerKeydown)
+  clearHideFlyoutTimer()
+})
+
+function onDrawerKeydown(event) {
+  if (event.key === 'Escape' && isDrawerMode.value && navOpen.value) {
+    closeNav()
+  }
+}
 
 function isExpanded(groupId) {
   return expandedGroups.value.has(groupId)
@@ -204,13 +221,14 @@ function toggleGroup(groupId) {
 }
 
 function toggleCollapsed() {
+  if (isDrawerMode.value) return
   collapsed.value = !collapsed.value
   clearHideFlyoutTimer()
   openFlyoutId.value = null
 }
 
 function expandSidebar() {
-  if (!collapsed.value) return
+  if (isDrawerMode.value || !collapsed.value) return
   collapsed.value = false
   clearHideFlyoutTimer()
   openFlyoutId.value = null
@@ -221,7 +239,7 @@ function isSidebarInteractiveTarget(target) {
 }
 
 function onSidebarContextMenu(event) {
-  if (!collapsed.value) return
+  if (!effectiveCollapsed.value) return
   if (event.target.closest('.app-sidebar__flyout-link')) return
 
   event.preventDefault()
@@ -229,19 +247,21 @@ function onSidebarContextMenu(event) {
 }
 
 function onCollapsedBackgroundClick(event) {
-  if (!collapsed.value) return
+  if (!effectiveCollapsed.value) return
   if (isSidebarInteractiveTarget(event.target)) return
 
   expandSidebar()
 }
 
 function onSidebarTransitionStart(event) {
+  if (isDrawerMode.value) return
   if (event.propertyName === 'width') {
     isTransitioning.value = true
   }
 }
 
 function onSidebarTransitionEnd(event) {
+  if (isDrawerMode.value) return
   if (event.propertyName === 'width') {
     isTransitioning.value = false
   }
@@ -280,10 +300,13 @@ function scheduleHideFlyout() {
   <aside
     class="app-sidebar"
     :class="{
-      'app-sidebar--collapsed': collapsed,
-      'app-sidebar--transitioning': isTransitioning,
+      'app-sidebar--collapsed': effectiveCollapsed,
+      'app-sidebar--transitioning': isTransitioning && !isDrawerMode,
+      'app-sidebar--drawer': isDrawerMode,
+      'app-sidebar--drawer-open': isDrawerMode && navOpen,
     }"
-    :title="collapsed ? 'Клик по пустому месту — развернуть панель' : undefined"
+    :aria-hidden="isDrawerMode && !navOpen ? 'true' : undefined"
+    :title="effectiveCollapsed ? 'Клик по пустому месту — развернуть панель' : undefined"
     @mouseenter="onSidebarEnter"
     @mouseleave="onSidebarLeave"
     @contextmenu="onSidebarContextMenu"
@@ -293,7 +316,7 @@ function scheduleHideFlyout() {
     <div class="app-sidebar__brand" @click="onCollapsedBackgroundClick">
       <div class="app-sidebar__brand-mark">
         <img
-          v-show="!collapsed || !sidebarHovered"
+          v-show="!effectiveCollapsed || !sidebarHovered"
           :src="campLogo"
           alt="IT ШКОЛА Сочи"
           width="44"
@@ -302,11 +325,11 @@ function scheduleHideFlyout() {
         />
 
         <BaseTooltip
-          v-show="collapsed && sidebarHovered"
+          v-show="effectiveCollapsed && sidebarHovered"
           class="app-sidebar__expand-tooltip"
           text="Развернуть панель"
           placement="right"
-          :disabled="!collapsed || !sidebarHovered"
+          :disabled="!effectiveCollapsed || !sidebarHovered"
         >
           <button
             type="button"
@@ -320,17 +343,27 @@ function scheduleHideFlyout() {
         </BaseTooltip>
       </div>
 
-      <div v-show="!collapsed" class="app-sidebar__title">
+      <div v-show="!effectiveCollapsed" class="app-sidebar__title">
         <span class="app-sidebar__title-main">IT ШКОЛА</span>
         <span class="app-sidebar__title-sub">Сочи</span>
       </div>
 
+      <button
+        v-if="isDrawerMode"
+        type="button"
+        class="app-sidebar__drawer-close"
+        aria-label="Закрыть меню"
+        @click="closeNav"
+      >
+        <BaseIcon name="x-close" :size="20" />
+      </button>
+
       <BaseTooltip
-        v-show="!collapsed"
+        v-show="!effectiveCollapsed && !isDrawerMode"
         class="app-sidebar__toggle-tooltip"
         text="Свернуть панель"
         placement="right"
-        :disabled="collapsed"
+        :disabled="effectiveCollapsed || isDrawerMode"
       >
         <button
           type="button"
@@ -345,6 +378,7 @@ function scheduleHideFlyout() {
     </div>
 
     <nav
+      id="app-sidebar-nav"
       class="app-sidebar__nav"
       aria-label="Основная навигация"
       @click="onCollapsedBackgroundClick"
@@ -352,9 +386,9 @@ function scheduleHideFlyout() {
     >
       <div
         v-if="navCollapsedMounted"
-        v-show="collapsed"
+        v-show="effectiveCollapsed"
         class="app-sidebar__nav-mode app-sidebar__nav-mode--collapsed"
-        :aria-hidden="!collapsed"
+        :aria-hidden="!effectiveCollapsed"
       >
         <div
           v-for="group in navGroups"
@@ -375,7 +409,7 @@ function scheduleHideFlyout() {
               class="app-sidebar__section-btn"
               :class="{ 'app-sidebar__section-btn--active': activeRoute === group.items[0].id }"
               :aria-label="group.items[0].label"
-              :tabindex="collapsed ? 0 : -1"
+              :tabindex="effectiveCollapsed ? 0 : -1"
             >
               <BaseIcon
                 :name="group.illustration"
@@ -400,7 +434,7 @@ function scheduleHideFlyout() {
               }"
               :aria-label="group.title"
               :aria-expanded="openFlyoutId === group.id"
-              :tabindex="collapsed ? 0 : -1"
+              :tabindex="effectiveCollapsed ? 0 : -1"
               @pointerenter="showFlyout(group.id)"
               @pointerleave="scheduleHideFlyout"
             >
@@ -440,7 +474,7 @@ function scheduleHideFlyout() {
       </div>
 
       <div
-        v-if="collapsed"
+        v-if="effectiveCollapsed"
         class="app-sidebar__expand-zone"
         aria-hidden="true"
         @click.stop="expandSidebar"
@@ -449,9 +483,9 @@ function scheduleHideFlyout() {
 
       <div
         v-if="navExpandedMounted"
-        v-show="!collapsed"
+        v-show="!effectiveCollapsed"
         class="app-sidebar__nav-mode app-sidebar__nav-mode--expanded"
-        :aria-hidden="collapsed"
+        :aria-hidden="effectiveCollapsed"
       >
         <template v-for="group in navGroups" :key="`expanded-${group.id}`">
           <div v-if="!group.title" class="app-sidebar__group">
@@ -463,7 +497,7 @@ function scheduleHideFlyout() {
               :href="isInternalHref(item.href) ? undefined : item.href"
               class="app-sidebar__link"
               :class="{ 'app-sidebar__link--active': activeRoute === item.id }"
-              :tabindex="collapsed ? -1 : 0"
+              :tabindex="effectiveCollapsed ? -1 : 0"
             >
               <BaseIcon
                 :name="item.illustration"
@@ -481,7 +515,7 @@ function scheduleHideFlyout() {
               type="button"
               class="app-sidebar__spoiler"
               :aria-expanded="isExpanded(group.id)"
-              :tabindex="collapsed ? -1 : 0"
+              :tabindex="effectiveCollapsed ? -1 : 0"
               @click="toggleGroup(group.id)"
             >
               <span class="app-sidebar__spoiler-label">{{ group.title }}</span>
@@ -505,7 +539,7 @@ function scheduleHideFlyout() {
                 :href="isInternalHref(item.href) ? undefined : item.href"
                 class="app-sidebar__link app-sidebar__link--nested"
                 :class="{ 'app-sidebar__link--active': activeRoute === item.id }"
-                :tabindex="collapsed ? -1 : 0"
+                :tabindex="effectiveCollapsed ? -1 : 0"
               >
                 <BaseIcon
                   :name="item.illustration"
@@ -536,11 +570,33 @@ function scheduleHideFlyout() {
   flex-direction: column;
   flex-shrink: 0;
   width: $sidebar-width;
+  height: 100dvh;
   height: 100vh;
   padding: $space-5 $space-4;
+  padding-top: calc(#{$space-5} + env(safe-area-inset-top, 0));
+  padding-bottom: calc(#{$space-5} + env(safe-area-inset-bottom, 0));
   background-color: $color-bg-sidebar;
   overflow: hidden;
   transition: width $transition-sidebar;
+
+  &--drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 950;
+    width: min(280px, 85vw);
+    height: 100dvh;
+    height: 100vh;
+    box-shadow: $shadow-lg;
+    transform: translateX(-105%);
+    transition: transform $transition-sidebar;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  &--drawer-open {
+    transform: translateX(0);
+  }
 
   &--transitioning {
     overflow: hidden;
@@ -585,6 +641,30 @@ function scheduleHideFlyout() {
 
     .app-sidebar__expand-zone {
       cursor: context-menu;
+    }
+  }
+
+  &__drawer-close {
+    @include flex-center;
+    @include touch-target;
+    @include press-scale(0.96);
+
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 0;
+    border: none;
+    border-radius: $radius-md;
+    background: transparent;
+    color: $color-text-secondary;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-bg-muted;
+      color: $color-text-primary;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
     }
   }
 
@@ -645,10 +725,11 @@ function scheduleHideFlyout() {
 
   &__toggle {
     @include flex-center;
+    @include touch-target;
 
     flex-shrink: 0;
-    width: 32px;
-    height: 32px;
+    width: $touch-target-min;
+    height: $touch-target-min;
     padding: 0;
     border: 1px solid $color-border;
     border-radius: $radius-md;
@@ -860,6 +941,7 @@ function scheduleHideFlyout() {
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    min-height: $touch-target-min;
     padding: $space-3 $space-4;
     border: none;
     border-radius: $radius-md;
@@ -906,6 +988,7 @@ function scheduleHideFlyout() {
     display: flex;
     align-items: center;
     gap: $space-3;
+    min-height: $touch-target-min;
     padding: $space-3 $space-4;
     border-radius: $radius-md;
     color: $color-text-secondary;

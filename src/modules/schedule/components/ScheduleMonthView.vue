@@ -176,4 +176,28 @@ function subjectColor(subject) {
     font-size: 10px;
   }
 }
+
+@include media-phone {
+  .schedule-month__cell {
+    align-items: center;
+    min-height: $touch-target-min;
+    min-width: 0;
+    padding: $space-1 0;
+  }
+
+  .schedule-month__day-number {
+    width: 100%;
+    text-align: center;
+    font-size: $font-size-sm;
+  }
+
+  .schedule-month__dots {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .schedule-month__more {
+    display: none;
+  }
+}
 </style>

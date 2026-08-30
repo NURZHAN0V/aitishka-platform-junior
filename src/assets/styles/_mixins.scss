@@ -60,3 +60,61 @@
     transition-duration: $transition-press-in;
   }
 }
+
+@mixin media-phone {
+  @media (max-width: $bp-phone) {
+    @content;
+  }
+}
+
+@mixin media-tablet-down {
+  @media (max-width: $bp-tablet) {
+    @content;
+  }
+}
+
+@mixin media-laptop-down {
+  @media (max-width: $bp-laptop) {
+    @content;
+  }
+}
+
+@mixin touch-target($size: $touch-target-min) {
+  min-width: $size;
+  min-height: $size;
+}
+
+@mixin safe-area-padding($sides: bottom) {
+  @if $sides == bottom or $sides == all {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  @if $sides == top or $sides == all {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+  @if $sides == left or $sides == all {
+    padding-left: env(safe-area-inset-left, 0);
+  }
+  @if $sides == right or $sides == all {
+    padding-right: env(safe-area-inset-right, 0);
+  }
+}
+
+/** Горизонтальный скролл чипов/фильтров с fade-намёком справа. */
+@mixin chip-scroll-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: $space-2;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding-bottom: $space-1;
+  margin-inline: -#{$space-1};
+  padding-inline: $space-1;
+  mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 28px), transparent 100%);
+
+  > * {
+    flex-shrink: 0;
+  }
+}

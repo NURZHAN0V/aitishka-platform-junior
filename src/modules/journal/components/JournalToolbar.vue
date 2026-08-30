@@ -30,6 +30,7 @@ const emit = defineEmits(['update:typeFilter'])
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .journal-toolbar {
   display: flex;
@@ -45,18 +46,15 @@ const emit = defineEmits(['update:typeFilter'])
 
     :deep(.base-chip) {
       flex-shrink: 0;
+      min-height: $touch-target-min;
     }
   }
-}
 
-@media (max-width: 720px) {
-  .journal-toolbar__types {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: $space-1;
-    margin-inline: -#{$space-1};
-    padding-inline: $space-1;
-    max-width: 100%;
+  @include media-tablet-down {
+    &__types {
+      @include chip-scroll-row;
+      width: 100%;
+    }
   }
 }
 </style>

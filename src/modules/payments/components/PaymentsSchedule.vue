@@ -25,37 +25,60 @@ defineProps({
       </p>
     </div>
 
-    <div v-else class="payments-schedule__table-wrap">
-      <table class="payments-schedule__table">
-        <thead>
-          <tr>
-            <th scope="col">Оплатить до</th>
-            <th scope="col">Описание</th>
-            <th scope="col" class="payments-schedule__amount-col">К оплате</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="row in rows"
-            :key="row.id"
-            :class="{ 'payments-schedule__row--past': row.isPast }"
-          >
-            <td>
-              <time :datetime="row.dueDate">{{ row.dueLabel }}</time>
-            </td>
-            <td>{{ row.description }}</td>
-            <td class="payments-schedule__amount-col">{{ row.amountLabel }}</td>
-          </tr>
-          <tr v-if="hasDebt" class="payments-schedule__debt">
-            <td colspan="2">Задолженность</td>
-            <td class="payments-schedule__amount-col">
-              <span class="payments-schedule__debt-value" :title="debtAbsoluteLabel">
-                {{ debtLabel }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="payments-schedule__content">
+      <div class="payments-schedule__table-wrap payments-schedule__desktop">
+        <table class="payments-schedule__table">
+          <thead>
+            <tr>
+              <th scope="col">Оплатить до</th>
+              <th scope="col">Описание</th>
+              <th scope="col" class="payments-schedule__amount-col">К оплате</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="row in rows"
+              :key="row.id"
+              :class="{ 'payments-schedule__row--past': row.isPast }"
+            >
+              <td>
+                <time :datetime="row.dueDate">{{ row.dueLabel }}</time>
+              </td>
+              <td>{{ row.description }}</td>
+              <td class="payments-schedule__amount-col">{{ row.amountLabel }}</td>
+            </tr>
+            <tr v-if="hasDebt" class="payments-schedule__debt">
+              <td colspan="2">Задолженность</td>
+              <td class="payments-schedule__amount-col">
+                <span class="payments-schedule__debt-value" :title="debtAbsoluteLabel">
+                  {{ debtLabel }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="payments-schedule__cards" aria-label="График платежей">
+        <li
+          v-for="row in rows"
+          :key="`card-${row.id}`"
+          class="payments-schedule__card"
+          :class="{ 'payments-schedule__card--past': row.isPast }"
+        >
+          <div class="payments-schedule__card-top">
+            <time :datetime="row.dueDate">{{ row.dueLabel }}</time>
+            <strong>{{ row.amountLabel }}</strong>
+          </div>
+          <p class="payments-schedule__card-desc">{{ row.description }}</p>
+        </li>
+        <li v-if="hasDebt" class="payments-schedule__card payments-schedule__card--debt">
+          <div class="payments-schedule__card-top">
+            <span>Задолженность</span>
+            <strong :title="debtAbsoluteLabel">{{ debtLabel }}</strong>
+          </div>
+        </li>
+      </ul>
     </div>
 
     <p v-if="hasDebt" class="payments-schedule__debt-note">
@@ -67,6 +90,7 @@ defineProps({
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .payments-schedule {
   height: 100%;
@@ -114,12 +138,60 @@ defineProps({
     color: $color-text-muted;
   }
 
+  &__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
   &__table-wrap {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     margin-inline: -#{$space-1};
     padding-inline: $space-1;
+  }
+
+  &__cards {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    gap: $space-2;
+    overflow: auto;
+  }
+
+  &__card {
+    padding: $space-3 $space-4;
+    border-radius: $radius-lg;
+    background: $color-bg-muted;
+
+    &--past {
+      color: $color-text-secondary;
+    }
+
+    &--debt {
+      background: $color-error-light;
+      color: $color-error-hover;
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  &__card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    min-height: $touch-target-min;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__card-desc {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 
   &__table {
@@ -184,13 +256,14 @@ defineProps({
     color: $color-text-muted;
     flex-shrink: 0;
   }
-}
 
-@media (max-width: 560px) {
-  .payments-schedule__table {
-    th:nth-child(2),
-    td:nth-child(2) {
-      min-width: 10rem;
+  @include media-phone {
+    &__desktop {
+      display: none;
+    }
+
+    &__cards {
+      display: flex;
     }
   }
 }

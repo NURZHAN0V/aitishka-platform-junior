@@ -81,12 +81,12 @@ const emit = defineEmits(['update:categoryFilter', 'update:sortBy'])
     gap: $space-4;
 
     &__categories {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding-bottom: $space-1;
-      margin-inline: -#{$space-1};
-      padding-inline: $space-1;
-      max-width: 100%;
+      @include chip-scroll-row;
+      width: 100%;
+
+      :deep(.base-chip) {
+        min-height: $touch-target-min;
+      }
     }
 
     &__sort {

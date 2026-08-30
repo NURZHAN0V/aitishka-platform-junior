@@ -22,31 +22,44 @@ defineProps({
       </p>
     </div>
 
-    <div v-else class="payments-history__table-wrap">
-      <table class="payments-history__table">
-        <thead>
-          <tr>
-            <th scope="col">Дата</th>
-            <th scope="col">Назначение платежа</th>
-            <th scope="col" class="payments-history__amount-col">Оплачено</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in rows" :key="row.id">
-            <td>
-              <time :datetime="row.paidAt">{{ row.dateLabel }}</time>
-            </td>
-            <td>{{ row.purpose }}</td>
-            <td class="payments-history__amount-col">{{ row.amountLabel }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="payments-history__content">
+      <div class="payments-history__table-wrap payments-history__desktop">
+        <table class="payments-history__table">
+          <thead>
+            <tr>
+              <th scope="col">Дата</th>
+              <th scope="col">Назначение платежа</th>
+              <th scope="col" class="payments-history__amount-col">Оплачено</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows" :key="row.id">
+              <td>
+                <time :datetime="row.paidAt">{{ row.dateLabel }}</time>
+              </td>
+              <td>{{ row.purpose }}</td>
+              <td class="payments-history__amount-col">{{ row.amountLabel }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="payments-history__cards" aria-label="История платежей">
+        <li v-for="row in rows" :key="`card-${row.id}`" class="payments-history__card">
+          <div class="payments-history__card-top">
+            <time :datetime="row.paidAt">{{ row.dateLabel }}</time>
+            <strong>{{ row.amountLabel }}</strong>
+          </div>
+          <p class="payments-history__card-desc">{{ row.purpose }}</p>
+        </li>
+      </ul>
     </div>
   </BaseCard>
 </template>
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .payments-history {
   height: 100%;
@@ -94,12 +107,54 @@ defineProps({
     color: $color-text-muted;
   }
 
+  &__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
   &__table-wrap {
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
     margin-inline: -#{$space-1};
     padding-inline: $space-1;
+  }
+
+  &__cards {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    gap: $space-2;
+    overflow: auto;
+  }
+
+  &__card {
+    padding: $space-3 $space-4;
+    border-radius: $radius-lg;
+    background: $color-bg-muted;
+  }
+
+  &__card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    min-height: $touch-target-min;
+    font-variant-numeric: tabular-nums;
+
+    strong {
+      color: $color-success-hover;
+    }
+  }
+
+  &__card-desc {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
   }
 
   &__table {
@@ -140,13 +195,14 @@ defineProps({
     white-space: nowrap;
     color: $color-success-hover;
   }
-}
 
-@media (max-width: 560px) {
-  .payments-history__table {
-    th:nth-child(2),
-    td:nth-child(2) {
-      min-width: 12rem;
+  @include media-phone {
+    &__desktop {
+      display: none;
+    }
+
+    &__cards {
+      display: flex;
     }
   }
 }

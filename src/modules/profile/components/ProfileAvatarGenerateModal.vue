@@ -92,7 +92,7 @@ function select() {
 
   &__actions {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-end;
     align-items: center;
     gap: $space-3;
@@ -101,6 +101,17 @@ function select() {
 
   &__refresh {
     flex-shrink: 0;
+  }
+
+  @include media-phone {
+    &__actions {
+      flex-direction: column-reverse;
+      align-items: stretch;
+
+      > * {
+        width: 100%;
+      }
+    }
   }
 
   &__stage {

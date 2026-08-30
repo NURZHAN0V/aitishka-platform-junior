@@ -135,8 +135,9 @@ const showMonthNav = computed(() => props.period === 'month')
 
   &__nav-btn {
     @include flex-center;
-    width: 36px;
-    height: 36px;
+    @include touch-target;
+    width: $touch-target-min;
+    height: $touch-target-min;
     border: 1px solid $color-border;
     border-radius: $radius-md;
     background-color: $color-bg-card;
@@ -210,12 +211,12 @@ const showMonthNav = computed(() => props.period === 'month')
   }
 
   .exams-toolbar__statuses {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: $space-1;
-    margin-inline: -#{$space-1};
-    padding-inline: $space-1;
-    max-width: 100%;
+    @include chip-scroll-row;
+    width: 100%;
+
+    :deep(.base-chip) {
+      min-height: $touch-target-min;
+    }
   }
 
   .exams-toolbar__subject {

@@ -42,6 +42,7 @@ const emit = defineEmits(['update:statusFilter', 'update:subjectFilter'])
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .homework-toolbar {
   display: flex;
@@ -58,6 +59,7 @@ const emit = defineEmits(['update:statusFilter', 'update:subjectFilter'])
 
     :deep(.base-chip) {
       flex-shrink: 0;
+      min-height: $touch-target-min;
     }
   }
 
@@ -66,21 +68,17 @@ const emit = defineEmits(['update:statusFilter', 'update:subjectFilter'])
     width: min(220px, 100%);
     margin-left: auto;
   }
-}
 
-@media (max-width: 720px) {
-  .homework-toolbar__statuses {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: $space-1;
-    margin-inline: -#{$space-1};
-    padding-inline: $space-1;
-    max-width: 100%;
-  }
+  @include media-tablet-down {
+    &__statuses {
+      @include chip-scroll-row;
+      width: 100%;
+    }
 
-  .homework-toolbar__subject {
-    width: 100%;
-    margin-left: 0;
+    &__subject {
+      width: 100%;
+      margin-left: 0;
+    }
   }
 }
 </style>

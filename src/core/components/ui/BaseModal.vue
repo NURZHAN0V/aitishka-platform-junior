@@ -123,6 +123,8 @@ onUnmounted(() => {
   inset: 0;
   z-index: 1000;
   @include flex-center;
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
 
   &__overlay {
     position: absolute;
@@ -133,9 +135,12 @@ onUnmounted(() => {
   &__content {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
     width: calc(100vw - #{$space-8});
+    max-height: calc(100dvh - #{$space-8});
     max-height: calc(100vh - #{$space-8});
-    overflow-y: auto;
+    overflow: hidden;
     background-color: $color-bg-card;
     border-radius: $radius-2xl;
     box-shadow: $shadow-modal;
@@ -153,13 +158,12 @@ onUnmounted(() => {
     }
 
     &--xl {
-      display: flex;
-      flex-direction: column;
       width: min(80vw, calc(100vw - #{$space-8}));
       max-width: min(80vw, calc(100vw - #{$space-8}));
+      height: min(80dvh, calc(100dvh - #{$space-8}));
       height: min(80vh, calc(100vh - #{$space-8}));
+      max-height: min(80dvh, calc(100dvh - #{$space-8}));
       max-height: min(80vh, calc(100vh - #{$space-8}));
-      overflow: hidden;
     }
   }
 
@@ -195,10 +199,11 @@ onUnmounted(() => {
   &__close {
     @include flex-center;
     @include no-select;
+    @include touch-target;
 
     flex-shrink: 0;
-    width: 36px;
-    height: 36px;
+    width: $touch-target-min;
+    height: $touch-target-min;
     border: none;
     border-radius: $radius-md;
     background: transparent;
@@ -216,6 +221,10 @@ onUnmounted(() => {
   }
 
   &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: $space-3 $space-6 $space-6;
     color: $color-text-secondary;
   }
@@ -233,11 +242,57 @@ onUnmounted(() => {
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: $space-3;
-    padding: $space-4 $space-6 $space-6;
+    flex-shrink: 0;
+    padding: $space-4 $space-6 calc(#{$space-6} + env(safe-area-inset-bottom, 0));
     border-top: 1px solid $color-border-light;
 
     > * {
       flex-shrink: 0;
+    }
+  }
+
+  @include media-phone {
+    align-items: flex-end;
+
+    &__content {
+      width: 100%;
+      max-width: none;
+      max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top, 0)));
+      max-height: min(92vh, calc(100vh - env(safe-area-inset-top, 0)));
+      border-radius: $radius-2xl $radius-2xl 0 0;
+      margin: 0;
+
+      &--sm,
+      &--md,
+      &--lg,
+      &--xl {
+        width: 100%;
+        max-width: none;
+        height: auto;
+      }
+
+      &--xl {
+        max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top, 0)));
+        max-height: min(92vh, calc(100vh - env(safe-area-inset-top, 0)));
+      }
+    }
+
+    &__header {
+      padding: $space-4 $space-4 $space-2;
+    }
+
+    &__body {
+      padding: $space-2 $space-4 $space-4;
+    }
+
+    &__footer {
+      flex-direction: column-reverse;
+      align-items: stretch;
+      padding: $space-3 $space-4 calc(#{$space-4} + env(safe-area-inset-bottom, 0));
+
+      > * {
+        width: 100%;
+      }
     }
   }
 }
@@ -257,6 +312,15 @@ onUnmounted(() => {
 
   .base-modal__content {
     transform: scale(0.95) translateY(8px);
+  }
+}
+
+@include media-phone {
+  .modal-enter-from,
+  .modal-leave-to {
+    .base-modal__content {
+      transform: translateY(24px);
+    }
   }
 }
 </style>
