@@ -25,7 +25,7 @@ function select() {
   <BaseModal
     :model-value="modelValue"
     title="Сгенерировать аватарку"
-    size="md"
+    size="lg"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <p class="avatar-generate__note">
@@ -92,11 +92,15 @@ function select() {
 
   &__actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-end;
     align-items: center;
     gap: $space-3;
     width: 100%;
+
+    > * {
+      flex-shrink: 0;
+    }
   }
 
   &__refresh {
@@ -105,6 +109,7 @@ function select() {
 
   @include media-phone {
     &__actions {
+      flex-wrap: wrap;
       flex-direction: column-reverse;
       align-items: stretch;
 
