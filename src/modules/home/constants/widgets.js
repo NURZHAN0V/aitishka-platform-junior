@@ -1,4 +1,10 @@
 import { RATING_WIDGET_SNAPSHOT } from '@/modules/rating/constants/rating.js'
+import { STREAKS_WIDGET_SNAPSHOT } from '@/modules/coins/constants/coins.js'
+import {
+  JOURNAL_WIDGET_LIMIT,
+  JOURNAL_WIDGET_LINK,
+  getRecentJournalEvents,
+} from '@/modules/journal/constants/journal.js'
 
 export const RATING_WIDGET_MOCK = RATING_WIDGET_SNAPSHOT
 
@@ -8,12 +14,7 @@ export const HOMEWORK_WIDGET_MOCK = {
   linkHref: '/homework',
 }
 
-export const STREAKS_WIDGET_MOCK = {
-  attendance: { current: 7, target: 10 },
-  punctuality: { current: 4, target: 5 },
-  profileBonus: 5,
-  linkHref: '#',
-}
+export const STREAKS_WIDGET_MOCK = STREAKS_WIDGET_SNAPSHOT
 
 export const GRADES_WIDGET_MOCK = {
   attendancePercent: 86,
@@ -32,41 +33,7 @@ export const GRADES_WIDGET_MOCK = {
 }
 
 export const JOURNAL_WIDGET_MOCK = {
-  itemsLimit: 5,
-  linkHref: '#',
-  items: [
-    {
-      id: 1,
-      type: 'grade',
-      grade: 5,
-      text: 'Получил оценку 5 по Python',
-      date: '28 мая, 14:30',
-    },
-    {
-      id: 2,
-      type: 'homework',
-      text: 'Сдал домашнюю работу',
-      date: '27 мая, 19:15',
-    },
-    {
-      id: 3,
-      type: 'coins',
-      amount: 3,
-      text: '+3 монетки за ДЗ',
-      date: '27 мая, 19:15',
-    },
-    {
-      id: 4,
-      type: 'attendance',
-      text: 'Посетил занятие',
-      date: '26 мая, 16:20',
-    },
-    {
-      id: 5,
-      type: 'grade',
-      grade: 4,
-      text: 'Получил оценку 4 по Математике',
-      date: '25 мая, 13:45',
-    },
-  ],
+  itemsLimit: JOURNAL_WIDGET_LIMIT,
+  linkHref: JOURNAL_WIDGET_LINK,
+  items: getRecentJournalEvents(),
 }

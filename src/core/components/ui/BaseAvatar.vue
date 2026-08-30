@@ -17,7 +17,7 @@ const props = defineProps({
   size: {
     type: String,
     default: 'md',
-    validator: (v) => ['sm', 'md', 'lg', 'xl'].includes(v),
+    validator: (v) => ['sm', 'md', 'lg', 'xl', '2xl'].includes(v),
   },
   status: {
     type: String,
@@ -65,7 +65,7 @@ const hasImage = computed(() => !!props.src)
 
   position: relative;
   flex-shrink: 0;
-  border-radius: 50%;
+  border-radius: $radius-md;
   overflow: visible;
   background: $gradient-primary;
   color: $color-text-inverse;
@@ -96,11 +96,22 @@ const hasImage = computed(() => !!props.src)
     font-size: $font-size-lg;
   }
 
+  &--2xl {
+    width: 192px;
+    height: 192px;
+    font-size: $font-size-3xl;
+    border-radius: $radius-lg;
+
+    .base-avatar__img {
+      border-radius: $radius-lg;
+    }
+  }
+
   &__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: $radius-md;
   }
 
   &__initials {
@@ -133,6 +144,11 @@ const hasImage = computed(() => !!props.src)
   &--xl &__status {
     width: 12px;
     height: 12px;
+  }
+
+  &--2xl &__status {
+    width: 16px;
+    height: 16px;
   }
 }
 </style>

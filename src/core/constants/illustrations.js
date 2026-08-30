@@ -38,6 +38,8 @@ export const WIDGET_ILLUSTRATIONS = {
   shoppingBasket: 'shopping-basket',
   rocket: 'rocket',
   studentBoy: 'student-boy',
+  avatarMoreVariants: 'avatar-more-variants',
+  photoPolaroidCard: 'photo-polaroid-card',
 }
 
 export const JOURNAL_ILLUSTRATIONS = {
@@ -87,6 +89,7 @@ export const NAV_ILLUSTRATIONS = {
   orders: 'nav-orders',
   payments: 'nav-payments',
   profile: 'nav-profile',
+  reviews: 'nav-reviews',
   settings: 'nav-settings',
   help: 'nav-help',
   logout: 'nav-logout',

@@ -1,15 +1,56 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { NAV_ILLUSTRATIONS } from '@/core/constants/illustrations'
+import { REVIEWS_PAGE_LINK } from '@/modules/reviews/constants/reviews.js'
+import { PROFILE_PAGE_LINK, SETTINGS_PAGE_LINK } from '@/modules/profile/constants/profile.js'
+import { HELP_PAGE_LINK } from '@/modules/help/constants/help.js'
 import { BaseIcon } from '@/core/components/ui'
 
 const emit = defineEmits(['close'])
+const route = useRoute()
 
 const menuItems = [
-  { id: 'profile', label: 'Мой профиль', illustration: NAV_ILLUSTRATIONS.profile, href: '#' },
-  { id: 'settings', label: 'Настройки аккаунта', illustration: NAV_ILLUSTRATIONS.settings, href: '#' },
-  { id: 'help', label: 'Помощь и поддержка', illustration: NAV_ILLUSTRATIONS.help, href: 'https://itcampsochi.ru/' },
+  {
+    id: 'profile',
+    label: 'Мой профиль',
+    illustration: NAV_ILLUSTRATIONS.profile,
+    href: PROFILE_PAGE_LINK,
+    routeName: 'profile',
+  },
+  {
+    id: 'reviews',
+    label: 'Мои отзывы',
+    illustration: NAV_ILLUSTRATIONS.reviews,
+    href: REVIEWS_PAGE_LINK,
+    routeName: 'reviews',
+  },
+  {
+    id: 'settings',
+    label: 'Настройки аккаунта',
+    illustration: NAV_ILLUSTRATIONS.settings,
+    href: SETTINGS_PAGE_LINK,
+    routeName: 'settings',
+  },
+  {
+    id: 'help',
+    label: 'Помощь и поддержка',
+    illustration: NAV_ILLUSTRATIONS.help,
+    href: HELP_PAGE_LINK,
+    routeName: 'help',
+  },
 ]
+
+function isInternalHref(href) {
+  return typeof href === 'string' && href.startsWith('/')
+}
+
+function isItemActive(item) {
+  if (item.routeName) {
+    return route.name === item.routeName
+  }
+  return isInternalHref(item.href) && route.path === item.href
+}
 
 function onKeydown(event) {
   if (event.key === 'Escape') {
@@ -29,11 +70,13 @@ onUnmounted(() => {
 <template>
   <div class="profile-menu" @click.stop>
     <nav class="profile-menu__nav" aria-label="Меню профиля">
-      <a
+      <component
+        :is="isInternalHref(item.href) ? RouterLink : 'a'"
         v-for="item in menuItems"
         :key="item.id"
-        :href="item.href"
+        v-bind="isInternalHref(item.href) ? { to: item.href } : { href: item.href }"
         class="profile-menu__link"
+        :class="{ 'profile-menu__link--active': isItemActive(item) }"
         @click="emit('close')"
       >
         <span class="profile-menu__icon-slot">
@@ -46,7 +89,7 @@ onUnmounted(() => {
           />
         </span>
         {{ item.label }}
-      </a>
+      </component>
     </nav>
 
     <footer class="profile-menu__footer">
@@ -81,6 +124,7 @@ onUnmounted(() => {
   &__nav {
     display: flex;
     flex-direction: column;
+    gap: $space-1;
     padding: $space-1 0;
   }
 
@@ -102,6 +146,12 @@ onUnmounted(() => {
 
     &:hover {
       background-color: $color-bg-muted;
+    }
+
+    &--active {
+      background-color: $color-primary-light;
+      color: $color-primary;
+      font-weight: $font-weight-medium;
     }
   }
 

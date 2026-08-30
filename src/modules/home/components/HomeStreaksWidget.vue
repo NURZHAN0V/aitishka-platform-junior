@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import { BaseIcon } from '@/core/components/ui'
 import { BRAND_ILLUSTRATIONS, WIDGET_ILLUSTRATIONS } from '@/core/constants/illustrations'
 import { STREAKS_WIDGET_MOCK } from '../constants/widgets.js'
@@ -15,6 +16,7 @@ const props = defineProps({
   },
   profileBonus: { type: Number, default: STREAKS_WIDGET_MOCK.profileBonus },
   linkHref: { type: String, default: STREAKS_WIDGET_MOCK.linkHref },
+  profileLinkHref: { type: String, default: STREAKS_WIDGET_MOCK.profileLinkHref },
 })
 
 const streakItems = computed(() => [
@@ -60,7 +62,7 @@ const streakItems = computed(() => [
           </div>
         </div>
 
-        <a href="#" class="home-streaks-widget__profile-cta" @click.prevent>
+        <RouterLink :to="profileLinkHref" class="home-streaks-widget__profile-cta">
           <BaseIcon
             :name="WIDGET_ILLUSTRATIONS.studentBoy"
             type="avif"
@@ -68,8 +70,8 @@ const streakItems = computed(() => [
             class="home-streaks-widget__profile-icon"
             label=""
           />
-          <span>Заполни профиль — +{{ profileBonus }} монеток</span>
-        </a>
+          <span>Загрузи фото — +{{ profileBonus }} после одобрения</span>
+        </RouterLink>
       </div>
 
       <div class="home-streaks-widget__deco" aria-hidden="true">
@@ -83,7 +85,7 @@ const streakItems = computed(() => [
     </div>
 
     <footer class="home-streaks-widget__footer">
-      <a :href="linkHref" class="home-streaks-widget__link">Мои монетки →</a>
+      <RouterLink :to="linkHref" class="home-streaks-widget__link">Мои монетки →</RouterLink>
     </footer>
   </article>
 </template>

@@ -11,6 +11,8 @@
     "illustrations:validate": "node scripts/validate-illustrations.mjs"
   },
   "dependencies": {
+    "@dicebear/core": "^10.7.0",
+    "@dicebear/styles": "^10.6.0",
     "vue": "^3.5.41",
     "vue-router": "^5.3.0"
   },

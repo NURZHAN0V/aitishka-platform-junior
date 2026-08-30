@@ -1,9 +1,12 @@
 <script setup>
+import { computed } from 'vue'
 import AppHeader from './AppHeader.vue'
 import AppSidebar from './AppSidebar.vue'
 import { BaseConfirmContainer, BaseToastContainer } from '@/core/components/ui'
+import { useCoinsBalance } from '@/modules/coins/composables/useCoinsBalance.js'
+import { useStudentAvatar } from '@/modules/profile/composables/useStudentAvatar.js'
 
-defineProps({
+const props = defineProps({
   showShell: {
     type: Boolean,
     default: true,
@@ -12,15 +15,17 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  /** @deprecated баланс берётся из useCoinsBalance — проп оставлен для совместимости */
   coins: {
     type: Number,
-    default: 0,
+    default: undefined,
   },
+  /** @deprecated имя/аватар берутся из useStudentAvatar — проп оставлен для совместимости */
   user: {
     type: Object,
     default: () => ({
-      name: 'Алина Петрова',
-      group: 'Группа Python-1',
+      name: '',
+      group: '',
       avatar: '',
     }),
   },
@@ -33,6 +38,15 @@ defineProps({
     default: false,
   },
 })
+
+const { balance } = useCoinsBalance()
+const { headerUser } = useStudentAvatar()
+
+const displayUser = computed(() => ({
+  name: headerUser.value.name || props.user.name || 'Алина Петрова',
+  group: headerUser.value.group || props.user.group || 'Группа Python-1',
+  avatar: headerUser.value.avatar || props.user.avatar || '',
+}))
 </script>
 
 <template>
@@ -44,8 +58,8 @@ defineProps({
           v-if="showShell"
           :breadcrumbs="breadcrumbs"
           :greeting="greeting"
-          :coins="coins"
-          :user="user"
+          :coins="balance"
+          :user="displayUser"
         />
         <main class="app-layout__content">
           <slot />

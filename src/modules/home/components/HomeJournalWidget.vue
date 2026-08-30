@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 import { BaseIcon } from '@/core/components/ui'
 import {
   BRAND_ILLUSTRATIONS,
@@ -88,7 +89,7 @@ function gradeIllustration(grade) {
     </div>
 
     <footer class="home-journal-widget__footer">
-      <a :href="linkHref" class="home-journal-widget__link">Весь журнал →</a>
+      <RouterLink :to="linkHref" class="home-journal-widget__link">Весь журнал →</RouterLink>
     </footer>
   </article>
 </template>

@@ -189,6 +189,7 @@ onUnmounted(() => {
     gap: $space-2;
     font-size: $font-size-sm;
     color: $color-text-secondary;
+    @include no-select;
   }
 
   &__sep {
@@ -222,7 +223,7 @@ onUnmounted(() => {
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
-    border-radius: $radius-lg;
+    border-radius: $radius-md;
   }
 
   &__coins {
@@ -233,6 +234,7 @@ onUnmounted(() => {
     color: $color-text-primary;
     text-decoration: none;
     transition: background-color $transition-base, border-color $transition-base;
+    @include no-select;
 
     &:hover {
       background-color: $color-coin-light;

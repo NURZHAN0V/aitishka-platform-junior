@@ -247,6 +247,8 @@ function resolveOutputPath(sourcePath) {
     'shopping-basket',
     'rocket',
     'student-boy',
+    'avatar-more-variants',
+    'photo-polaroid-card',
   ]
   if (widgetNames.includes(fileName)) {
     return path.join(illustrationsDir, 'widgets', `${fileName}.avif`)

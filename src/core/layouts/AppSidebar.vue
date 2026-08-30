@@ -3,7 +3,7 @@ import { ref, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NAV_ILLUSTRATIONS } from '@/core/constants/illustrations'
 import { BaseIcon, BaseTooltip } from '@/core/components/ui'
-import campLogo from '@/assets/images/illustrations/brand/it-sochi-camp-logo.png'
+import campLogo from '@/assets/images/brand/logo-it.svg'
 
 const props = defineProps({
   activeRoute: {
@@ -35,8 +35,8 @@ const navGroups = [
     title: 'Активность',
     illustration: NAV_ILLUSTRATIONS.journal,
     items: [
-      { id: 'journal', label: 'Журнал', illustration: NAV_ILLUSTRATIONS.journal, href: '#' },
-      { id: 'coins', label: 'Монетки', illustration: NAV_ILLUSTRATIONS.coins, href: '#' },
+      { id: 'journal', label: 'Журнал', illustration: NAV_ILLUSTRATIONS.journal, href: '/journal' },
+      { id: 'coins', label: 'Монетки', illustration: NAV_ILLUSTRATIONS.coins, href: '/coins' },
     ],
   },
   {
@@ -45,14 +45,14 @@ const navGroups = [
     illustration: NAV_ILLUSTRATIONS.market,
     items: [
       { id: 'market', label: 'Маркет', illustration: NAV_ILLUSTRATIONS.market, href: '/market' },
-      { id: 'orders', label: 'Мои заказы', illustration: NAV_ILLUSTRATIONS.orders, href: '#' },
+      { id: 'orders', label: 'Мои заказы', illustration: NAV_ILLUSTRATIONS.orders, href: '/orders' },
     ],
   },
   {
     id: 'finance',
     title: 'Финансы',
     illustration: NAV_ILLUSTRATIONS.payments,
-    items: [{ id: 'payments', label: 'Платежи', illustration: NAV_ILLUSTRATIONS.payments, href: '#' }],
+    items: [{ id: 'payments', label: 'Платежи', illustration: NAV_ILLUSTRATIONS.payments, href: '/payments' }],
   },
 ]
 

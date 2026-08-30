@@ -34,6 +34,11 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  iconType: {
+    type: String,
+    default: 'svg',
+    validator: (v) => ['svg', 'avif'].includes(v),
+  },
   iconPosition: {
     type: String,
     default: 'leading',
@@ -43,6 +48,12 @@ const props = defineProps({
 
 const tag = computed(() => props.as)
 const isLink = computed(() => props.as === 'a')
+const iconSize = computed(() => {
+  if (props.iconType === 'avif') {
+    return props.size === 'sm' ? 20 : props.size === 'lg' ? 28 : 24
+  }
+  return props.size === 'sm' ? 16 : props.size === 'lg' ? 22 : 18
+})
 </script>
 
 <template>
@@ -62,14 +73,16 @@ const isLink = computed(() => props.as === 'a')
     <BaseIcon
       v-if="icon && iconPosition === 'leading'"
       :name="icon"
-      :size="size === 'sm' ? 16 : size === 'lg' ? 22 : 18"
+      :type="iconType"
+      :size="iconSize"
       class="base-button__icon"
     />
     <span class="base-button__label"><slot /></span>
     <BaseIcon
       v-if="icon && iconPosition === 'trailing'"
       :name="icon"
-      :size="size === 'sm' ? 16 : size === 'lg' ? 22 : 18"
+      :type="iconType"
+      :size="iconSize"
       class="base-button__icon"
     />
   </component>
@@ -173,6 +186,7 @@ const isLink = computed(() => props.as === 'a')
   &__label {
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
   }
 }
 </style>

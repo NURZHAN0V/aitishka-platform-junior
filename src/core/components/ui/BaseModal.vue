@@ -230,10 +230,15 @@ onUnmounted(() => {
 
   &__footer {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     gap: $space-3;
     padding: $space-4 $space-6 $space-6;
     border-top: 1px solid $color-border-light;
+
+    > * {
+      flex-shrink: 0;
+    }
   }
 }
 
