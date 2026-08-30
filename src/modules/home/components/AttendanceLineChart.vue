@@ -38,12 +38,52 @@ const CHART_PADDING = {
 }
 
 const TOOLTIP = {
-  width: 58,
-  height: 38,
+  width: 72,
+  height: 46,
   offset: 14,
 }
 
 const ACTIVE_DOT_R = 6
+const CATMULL_ROM_K = 1 / 6
+
+function formatCoord(value) {
+  return Math.round(value * 100) / 100
+}
+
+function pointCmd(point) {
+  return `${formatCoord(point.x)} ${formatCoord(point.y)}`
+}
+
+function bezierControl(current, previous, next, reverse) {
+  const prev = previous ?? current
+  const nxt = next ?? current
+  const sign = reverse ? -1 : 1
+  return {
+    x: current.x + (nxt.x - prev.x) * CATMULL_ROM_K * sign,
+    y: current.y + (nxt.y - prev.y) * CATMULL_ROM_K * sign,
+  }
+}
+
+function smoothSegments(points) {
+  if (points.length < 2) return ''
+  if (points.length === 2) return `L ${pointCmd(points[1])}`
+
+  const commands = []
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const from = points[index]
+    const to = points[index + 1]
+    const cp1 = bezierControl(from, points[index - 1], to, false)
+    const cp2 = bezierControl(to, from, points[index + 2], true)
+    commands.push(`C ${pointCmd(cp1)} ${pointCmd(cp2)} ${pointCmd(to)}`)
+  }
+  return commands.join(' ')
+}
+
+function smoothLinePath(points) {
+  if (!points.length) return ''
+  const segments = smoothSegments(points)
+  return segments ? `M ${pointCmd(points[0])} ${segments}` : `M ${pointCmd(points[0])}`
+}
 
 const valueSpan = computed(() => {
   const span = props.maxValue - props.minValue
@@ -136,11 +176,7 @@ const tooltipPosition = computed(() => {
   }
 })
 
-const linePath = computed(() =>
-  plotPoints.value
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' '),
-)
+const linePath = computed(() => smoothLinePath(plotPoints.value))
 
 const areaPath = computed(() => {
   if (plotPoints.value.length < 2) return ''
@@ -148,11 +184,13 @@ const areaPath = computed(() => {
   const bottom = chart.value.height - chart.value.paddingBottom
   const first = plotPoints.value[0]
   const last = plotPoints.value[plotPoints.value.length - 1]
+  const segments = smoothSegments(plotPoints.value)
 
   return [
-    `M ${first.x} ${bottom}`,
-    ...plotPoints.value.map((point) => `L ${point.x} ${point.y}`),
-    `L ${last.x} ${bottom}`,
+    `M ${formatCoord(first.x)} ${formatCoord(bottom)}`,
+    `L ${pointCmd(first)}`,
+    segments,
+    `L ${formatCoord(last.x)} ${formatCoord(bottom)}`,
     'Z',
   ].join(' ')
 })
@@ -304,7 +342,7 @@ onUnmounted(() => {
         <text
           class="attendance-line-chart__tooltip-value"
           :x="tooltipPosition.x + TOOLTIP.width / 2"
-          :y="tooltipPosition.y + 16"
+          :y="tooltipPosition.y + 20"
           text-anchor="middle"
         >
           {{ displayValue(activePoint.value) }}
@@ -312,7 +350,7 @@ onUnmounted(() => {
         <text
           class="attendance-line-chart__tooltip-label"
           :x="tooltipPosition.x + TOOLTIP.width / 2"
-          :y="tooltipPosition.y + 30"
+          :y="tooltipPosition.y + 36"
           text-anchor="middle"
         >
           {{ activePoint.label }}
@@ -470,7 +508,7 @@ onUnmounted(() => {
   &__tooltip-value {
     fill: $color-primary;
     color: $color-primary;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: $font-weight-bold;
     font-family: $font-family-base;
   }
@@ -478,7 +516,7 @@ onUnmounted(() => {
   &__tooltip-label {
     fill: $color-text-secondary;
     color: $color-text-secondary;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: $font-weight-semibold;
     font-family: $font-family-base;
   }
