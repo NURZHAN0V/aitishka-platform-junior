@@ -94,7 +94,7 @@ function confirm() {
     @include flex-center;
     min-height: 200px;
     padding: $space-5;
-    border-radius: $radius-xl;
+    border-radius: $radius-card;
     background: linear-gradient(
       165deg,
       color-mix(in srgb, var(--accent) 20%, white) 0%,

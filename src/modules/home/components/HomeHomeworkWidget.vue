@@ -59,7 +59,7 @@ defineProps({
   flex-direction: column;
   height: 100%;
   padding: $space-4;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background: $gradient-widget-homework;
   color: $color-text-inverse;
   box-shadow: $shadow-md;

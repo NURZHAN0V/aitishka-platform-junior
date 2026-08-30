@@ -63,7 +63,7 @@ const emit = defineEmits(['buy'])
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background-color: $color-bg-card;
   border: 1px solid $color-border-light;
   box-shadow: $shadow-sm;

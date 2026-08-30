@@ -120,7 +120,10 @@ const sidebarState = readSidebarState()
 
 const collapsed = ref(sidebarState.collapsed)
 /** В drawer всегда полный список — без collapsed flyouts. */
-const effectiveCollapsed = computed(() => (isDrawerMode.value ? false : collapsed.value))
+const effectiveCollapsed = computed(() => {
+  if (isDrawerMode.value) return false
+  return collapsed.value
+})
 const sidebarHovered = ref(false)
 const isTransitioning = ref(false)
 const navCollapsedMounted = ref(collapsed.value)
@@ -305,7 +308,7 @@ function scheduleHideFlyout() {
       'app-sidebar--drawer': isDrawerMode,
       'app-sidebar--drawer-open': isDrawerMode && navOpen,
     }"
-    :aria-hidden="isDrawerMode && !navOpen ? 'true' : undefined"
+    :inert="isDrawerMode && !navOpen"
     :title="effectiveCollapsed ? 'Клик по пустому месту — развернуть панель' : undefined"
     @mouseenter="onSidebarEnter"
     @mouseleave="onSidebarLeave"
@@ -349,7 +352,7 @@ function scheduleHideFlyout() {
       </div>
 
       <button
-        v-if="isDrawerMode"
+        v-if="isDrawerMode && navOpen"
         type="button"
         class="app-sidebar__drawer-close"
         aria-label="Закрыть меню"

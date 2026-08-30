@@ -117,7 +117,7 @@ defineProps({
     align-items: center;
     justify-content: center;
     padding: $space-2;
-    border-radius: $radius-xl;
+    border-radius: $radius-card;
     background:
       radial-gradient(120% 80% at 100% 0%, rgba($color-primary, 0.1), transparent 55%),
       radial-gradient(90% 60% at 0% 100%, rgba($color-coin, 0.14), transparent 50%),

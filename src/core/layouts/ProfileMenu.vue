@@ -116,7 +116,7 @@ onUnmounted(() => {
 .profile-menu {
   width: min(280px, calc(100vw - #{$space-6}));
   padding: $space-2;
-  border-radius: $radius-xl;
+  border-radius: $radius-card;
   background-color: $color-bg-card;
   box-shadow: $shadow-lg;
   border: 1px solid $color-border-light;

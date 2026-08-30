@@ -90,7 +90,7 @@ const emit = defineEmits(['copy-field', 'copy-all'])
     justify-content: space-between;
     gap: $space-3;
     padding: $space-3 $space-4;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background-color: $color-bg-muted;
   }
 

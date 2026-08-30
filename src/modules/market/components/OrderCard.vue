@@ -59,7 +59,7 @@ defineProps({
   gap: $space-4;
   align-items: stretch;
   padding: $space-4;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background-color: $color-bg-card;
   border: 1px solid $color-border-light;
   box-shadow: $shadow-sm;
@@ -68,7 +68,7 @@ defineProps({
     @include flex-center;
     flex-shrink: 0;
     width: 96px;
-    border-radius: $radius-xl;
+    border-radius: $radius-card;
     background: linear-gradient(
       165deg,
       color-mix(in srgb, var(--accent) 18%, white) 0%,

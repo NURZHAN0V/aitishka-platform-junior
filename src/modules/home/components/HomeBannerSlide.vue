@@ -53,7 +53,7 @@ defineProps({
   overflow: hidden;
   text-decoration: none;
   background: $gradient-banner;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
 
   &__clip {
     position: absolute;

@@ -110,7 +110,7 @@ const visibleLeaderboard = computed(() =>
   flex-direction: column;
   height: 100%;
   padding: $space-4;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background: linear-gradient(145deg, #7c3aed 0%, #6366f1 55%, #8b5cf6 100%);
   color: $color-text-inverse;
   box-shadow: $shadow-md;

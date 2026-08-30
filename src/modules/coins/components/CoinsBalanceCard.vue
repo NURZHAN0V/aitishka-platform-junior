@@ -49,7 +49,7 @@ defineProps({
   justify-content: space-between;
   gap: $space-5;
   padding: $space-4 $space-6;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background: $gradient-coin;
   color: $color-text-primary;
   box-shadow: $shadow-md;

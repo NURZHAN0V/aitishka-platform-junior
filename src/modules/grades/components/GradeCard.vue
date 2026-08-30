@@ -171,7 +171,7 @@ function onToggle() {
     align-self: stretch;
     min-height: 44px;
     margin: -#{$space-4} 0 -#{$space-4} -#{$space-4};
-    border-radius: $radius-lg 0 0 $radius-lg;
+    border-radius: $radius-card 0 0 $radius-card;
     background: var(--subject-color);
   }
 

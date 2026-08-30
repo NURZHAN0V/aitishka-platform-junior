@@ -85,7 +85,7 @@ defineEmits(['toggle'])
     align-items: center;
     gap: $space-3;
     padding: $space-3 $space-4;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background-color: $color-bg-muted;
     border: 1px solid transparent;
     transition:
@@ -105,7 +105,7 @@ defineEmits(['toggle'])
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background: transparent;
     box-shadow: none;
     opacity: 0.72;

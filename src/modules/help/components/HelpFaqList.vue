@@ -55,7 +55,7 @@ const items = HELP_FAQ
   }
 
   &__item {
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background-color: $color-bg-muted;
     overflow: hidden;
 
@@ -85,7 +85,7 @@ const items = HELP_FAQ
 
     &:focus-visible {
       @include focus-ring;
-      border-radius: $radius-lg;
+      border-radius: $radius-card;
     }
   }
 

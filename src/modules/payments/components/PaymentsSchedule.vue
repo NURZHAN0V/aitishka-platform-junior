@@ -121,7 +121,7 @@ defineProps({
     flex: 1 1 auto;
     text-align: center;
     padding: $space-5 $space-4;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background-color: $color-bg-muted;
   }
 
@@ -165,7 +165,7 @@ defineProps({
 
   &__card {
     padding: $space-3 $space-4;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background: $color-bg-muted;
 
     &--past {

@@ -104,7 +104,7 @@ function gradeIllustration(grade) {
   height: 100%;
   min-height: 0;
   padding: $space-4;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background: $gradient-widget-journal;
   box-shadow: $shadow-md;
 

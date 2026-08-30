@@ -154,7 +154,7 @@ function formatSize(bytes) {
   gap: $space-3;
   padding: $space-8 $space-6;
   border: 2px dashed $color-border;
-  border-radius: $radius-lg;
+  border-radius: $radius-card;
   background-color: $color-bg-muted;
   text-align: center;
   cursor: pointer;

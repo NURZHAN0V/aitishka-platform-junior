@@ -55,7 +55,7 @@ defineEmits(['toggle-lesson'])
   flex: 1 1 0;
   min-width: 196px;
   padding: $space-3;
-  border-radius: $radius-lg;
+  border-radius: $radius-card;
   background-color: $color-bg-muted;
   border: 2px solid transparent;
 

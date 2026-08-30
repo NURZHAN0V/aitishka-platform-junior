@@ -75,7 +75,7 @@ function gradeVariant(grade) {
   align-items: center;
   gap: $space-3;
   padding: $space-3 $space-4;
-  border-radius: $radius-xl;
+  border-radius: $radius-card;
   background-color: $color-bg-card;
   box-shadow: $shadow-sm;
   text-decoration: none;

@@ -141,7 +141,7 @@ onUnmounted(() => {
   flex-wrap: wrap;
   gap: $space-2;
   padding: $space-1;
-  border-radius: $radius-lg;
+  border-radius: $radius-md;
   background-color: $color-bg-muted;
   @include no-select;
 

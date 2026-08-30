@@ -72,7 +72,7 @@ function subjectColor(subject) {
   gap: $space-2;
   padding: $space-3;
   border: 1px solid $color-border;
-  border-radius: $radius-lg;
+  border-radius: $radius-card;
   background-color: $color-bg-card;
 }
 

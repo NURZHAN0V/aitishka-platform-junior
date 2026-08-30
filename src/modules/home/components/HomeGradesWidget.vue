@@ -52,7 +52,7 @@ defineProps({
   height: 100%;
   min-height: 0;
   padding: $space-4;
-  border-radius: $radius-2xl;
+  border-radius: $radius-card;
   background-color: $gradient-widget-grades;
   box-shadow: $shadow-sm;
 

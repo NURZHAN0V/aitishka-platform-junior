@@ -130,7 +130,7 @@ const iconSize = computed(() => {
     padding: $space-4 $space-6;
     font-size: $font-size-lg;
     min-height: 48px;
-    border-radius: $radius-lg;
+    border-radius: $radius-button;
   }
 
   &--primary {

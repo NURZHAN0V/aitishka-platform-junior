@@ -125,7 +125,7 @@ function select() {
     aspect-ratio: 1;
     padding: 0;
     border: 2px solid $color-border;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background: $color-bg-muted;
     overflow: hidden;
     cursor: pointer;

@@ -119,7 +119,7 @@ const groupFieldValue = computed(() => {
     width: auto;
     aspect-ratio: 1;
     max-width: 100%;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
@@ -157,7 +157,7 @@ const groupFieldValue = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background: $color-bg-overlay;
     color: $color-text-inverse;
     opacity: 0;

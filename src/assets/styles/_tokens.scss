@@ -175,9 +175,10 @@ $radius-md: 12px;
 $radius-lg: 16px;
 $radius-xl: 20px;
 $radius-2xl: 24px;
-$radius-card: $radius-lg;
-$radius-button: $radius-md;
-$radius-chip: 999px;
+// Ролевые алиасы (dizayn: карточки/кнопки 12–24px; без pill-«таблеток»)
+$radius-card: $radius-xl; // карточки и виджеты
+$radius-button: $radius-md; // кнопки и контролы
+$radius-chip: $radius-md; // чипы/бейджи — мягкие углы, не 999px
 
 // --- Тени ---
 

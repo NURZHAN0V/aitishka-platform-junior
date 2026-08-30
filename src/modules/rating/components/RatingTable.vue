@@ -141,7 +141,7 @@ defineProps({
 
   &__card {
     padding: $space-3 $space-4;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background: $color-bg-muted;
 
     &--current {

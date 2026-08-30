@@ -88,7 +88,7 @@ const contacts = SCHOOL_CONTACTS
     align-items: baseline;
     gap: $space-2 $space-4;
     padding: $space-3 $space-4;
-    border-radius: $radius-lg;
+    border-radius: $radius-card;
     background-color: $color-bg-muted;
 
     dt {

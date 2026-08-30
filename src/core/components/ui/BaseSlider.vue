@@ -116,7 +116,7 @@ function goToSlide(index) {
     overflow: hidden;
 
     &--rounded {
-      border-radius: $radius-2xl;
+      border-radius: $radius-card;
     }
 
     &--overflow {

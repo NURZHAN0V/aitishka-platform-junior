@@ -62,7 +62,7 @@ onUnmounted(() => {
   min-width: min(420px, calc(100vw - #{$space-12}));
   max-width: min(560px, calc(100vw - #{$space-12}));
   padding: $space-5 $space-6;
-  border-radius: $radius-xl;
+  border-radius: $radius-card;
   background-color: $color-bg-card;
   box-shadow: $shadow-lg;
 

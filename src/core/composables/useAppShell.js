@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { readonly, ref, watch } from 'vue'
 
 /** Совпадает с `$bp-tablet` в tokens — ниже этого сайдбар становится drawer. */
 export const APP_SHELL_TABLET_MQ = `(max-width: 900px)`
@@ -20,9 +20,18 @@ function lockBodyScroll(lock) {
   }
 }
 
+function blurSidebarFocus() {
+  if (typeof document === 'undefined') return
+  const active = document.activeElement
+  if (active instanceof HTMLElement && active.closest('.app-sidebar')) {
+    active.blur()
+  }
+}
+
 function syncDrawerMode(matches) {
   isDrawerMode.value = matches
   if (!matches) {
+    blurSidebarFocus()
     navOpen.value = false
   }
 }
@@ -43,11 +52,11 @@ function ensureInit() {
   } else {
     mediaQuery.addListener(mediaHandler)
   }
-}
 
-watch([navOpen, isDrawerMode], ([open, drawer]) => {
-  lockBodyScroll(open && drawer)
-})
+  watch([navOpen, isDrawerMode], ([open, drawer]) => {
+    lockBodyScroll(open && drawer)
+  })
+}
 
 /**
  * Оболочка приложения: drawer-навигация на телефоне/планшете.
@@ -62,17 +71,22 @@ export function useAppShell() {
   }
 
   function closeNav() {
+    blurSidebarFocus()
     navOpen.value = false
   }
 
   function toggleNav() {
     if (!isDrawerMode.value) return
-    navOpen.value = !navOpen.value
+    if (navOpen.value) {
+      closeNav()
+    } else {
+      openNav()
+    }
   }
 
   return {
-    navOpen: computed(() => navOpen.value),
-    isDrawerMode: computed(() => isDrawerMode.value),
+    navOpen: readonly(navOpen),
+    isDrawerMode: readonly(isDrawerMode),
     openNav,
     closeNav,
     toggleNav,
