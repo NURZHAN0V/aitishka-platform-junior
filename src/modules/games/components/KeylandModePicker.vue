@@ -17,14 +17,13 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 <template>
   <div class="keyland-modes">
     <div class="keyland-modes__hero">
-      <div class="keyland-modes__cover">
-        <img
-          v-if="coverSrc"
-          :src="coverSrc"
-          alt="Клавишленд"
-          class="keyland-modes__cover-img"
-        />
-      </div>
+      <img
+        v-if="coverSrc"
+        :src="coverSrc"
+        alt=""
+        class="keyland-modes__hero-img"
+      />
+      <div class="keyland-modes__hero-scrim" aria-hidden="true" />
       <header class="keyland-modes__head">
         <p class="keyland-modes__eyebrow">Клавишленд</p>
         <h2 class="keyland-modes__title">Выбери, что тренировать</h2>
@@ -59,53 +58,76 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 }
 
 .keyland-modes__hero {
-  display: grid;
-  grid-template-columns: minmax(200px, 280px) 1fr;
-  gap: $space-5;
+  position: relative;
+  display: flex;
   align-items: center;
-}
-
-.keyland-modes__cover {
-  border-radius: $radius-lg;
+  justify-content: flex-end;
   overflow: hidden;
-  background: #1a1240;
-  aspect-ratio: 1;
+  border-radius: $radius-lg;
+  aspect-ratio: 21 / 9;
+  min-height: 160px;
   max-height: 280px;
+  background: #1a1240;
+  isolation: isolate;
 }
 
-.keyland-modes__cover-img {
+.keyland-modes__hero-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 28% center;
+}
+
+.keyland-modes__hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(18, 10, 48, 0.4) 50%,
+    rgba(18, 10, 48, 0.85) 100%
+  );
 }
 
 .keyland-modes__head {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   gap: $space-2;
   min-width: 0;
+  max-width: 52%;
+  padding: $space-5 $space-6;
+  text-align: right;
 }
 
 .keyland-modes__eyebrow {
   margin: 0;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  color: $color-primary;
+  color: #c4b5fd;
+  text-shadow: 0 1px 4px rgba(10, 6, 32, 0.45);
 }
 
 .keyland-modes__title {
   margin: 0;
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $color-text-primary;
+  color: $color-text-inverse;
+  text-shadow: 0 1px 8px rgba(10, 6, 32, 0.55);
 }
 
 .keyland-modes__lead {
   margin: 0;
-  color: $color-text-secondary;
+  color: rgba(255, 255, 255, 0.82);
   line-height: 1.45;
-  max-width: 32rem;
+  text-shadow: 0 1px 4px rgba(10, 6, 32, 0.45);
 }
 
 .keyland-modes__grid {
