@@ -61,11 +61,12 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   justify-content: flex-end;
   overflow: hidden;
   border-radius: $radius-lg;
-  aspect-ratio: 21 / 8;
-  min-height: 150px;
-  max-height: 280px;
+  aspect-ratio: 21 / 10;
+  min-height: 240px;
+  max-height: 400px;
   background: #1a1240;
   isolation: isolate;
+  @include no-select;
 }
 
 .keyland-modes__hero-img {
@@ -76,7 +77,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 28% 38%;
+  object-position: 26% 58%;
 }
 
 .keyland-modes__hero-scrim {
@@ -96,15 +97,15 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   position: relative;
   z-index: 2;
   min-width: 0;
-  max-width: 52%;
-  padding: $space-4 $space-6;
+  max-width: 46%;
+  padding: $space-5 $space-6;
   text-align: right;
+  @include no-select;
 }
 
 .keyland-modes__title {
   margin: 0;
-  font-size: calc($font-size-sm * 2.25);
-  @include keyland-title-text;
+  @include keyland-cover-title-text;
 }
 
 .keyland-modes__grid {
