@@ -106,6 +106,11 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 .keyland-modes__title {
   margin: 0;
   @include keyland-cover-title-text;
+  font-size: clamp(
+    calc(2.25rem * 2.5),
+    calc(5.2vw * 2.5),
+    calc(3.875rem * 2.5)
+  );
 }
 
 .keyland-modes__grid {

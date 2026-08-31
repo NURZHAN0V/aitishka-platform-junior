@@ -113,7 +113,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 
 .games-lobby__title {
   margin: 0;
-  font-size: calc($font-size-sm * 1.75);
+  font-size: calc($font-size-sm * 2.5);
   @include keyland-title-text;
   text-wrap: balance;
 }
