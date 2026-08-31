@@ -26,6 +26,9 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
       <div class="keyland-modes__hero-scrim" aria-hidden="true" />
       <header class="keyland-modes__head">
         <h1 class="keyland-modes__title">Клавишленд</h1>
+        <p class="keyland-modes__lead">
+          Короткая партия. Результат можно сохранить в браузере. Монетки за игру не даются.
+        </p>
       </header>
     </div>
 
@@ -96,21 +99,28 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 .keyland-modes__head {
   position: relative;
   z-index: 2;
-  min-width: 0;
-  max-width: 46%;
-  padding: $space-5 $space-6;
+  flex: 0 1 auto;
+  max-width: 50%;
+  padding: $space-5 calc($space-6 + 12px) $space-5 $space-5;
   text-align: right;
   @include no-select;
 }
 
 .keyland-modes__title {
   margin: 0;
+  display: inline-block;
+  max-width: 100%;
+  padding-inline-end: 0.2em;
   @include keyland-cover-title-text;
-  font-size: clamp(
-    calc(2.25rem * 2.5),
-    calc(5.2vw * 2.5),
-    calc(3.875rem * 2.5)
-  );
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+}
+
+.keyland-modes__lead {
+  margin: $space-2 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.45;
+  text-shadow: 0 1px 4px rgba(10, 6, 32, 0.45);
+  text-wrap: balance;
 }
 
 .keyland-modes__grid {
