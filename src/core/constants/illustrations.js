@@ -5,6 +5,7 @@ export const ILLUSTRATION_CATEGORIES = {
   journal: 'journal',
   market: 'market',
   nav: 'nav',
+  games: 'games',
 }
 
 export const BRAND_ILLUSTRATIONS = {
@@ -93,6 +94,12 @@ export const NAV_ILLUSTRATIONS = {
   settings: 'nav-settings',
   help: 'nav-help',
   logout: 'nav-logout',
+  games: 'nav-games',
+  keyland: 'nav-keyland',
+}
+
+export const GAMES_ILLUSTRATIONS = {
+  keylandCover: 'keyland-cover',
 }
 
 export const ALL_ILLUSTRATIONS = [
@@ -102,6 +109,7 @@ export const ALL_ILLUSTRATIONS = [
   ...Object.values(JOURNAL_ILLUSTRATIONS),
   ...Object.values(MARKET_ILLUSTRATIONS),
   ...Object.values(NAV_ILLUSTRATIONS),
+  ...Object.values(GAMES_ILLUSTRATIONS),
 ]
 
 export function getSubjectIllustrationName(slug) {

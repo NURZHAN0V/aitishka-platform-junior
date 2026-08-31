@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { APP_SHELL_TABLET_MQ } from '@/core/composables/useAppShell.js'
+import { useToast } from '@/core/composables/useToast'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -83,8 +85,29 @@ const router = createRouter({
       name: 'help',
       component: () => import('@/views/HelpView.vue'),
     },
+    {
+      path: '/games',
+      name: 'games',
+      component: () => import('@/views/GamesView.vue'),
+      meta: { desktopOnly: true },
+    },
+    {
+      path: '/games/keyland',
+      name: 'keyland',
+      component: () => import('@/views/KeylandView.vue'),
+      meta: { desktopOnly: true },
+    },
   ],
 })
 
+router.beforeEach((to) => {
+  if (!to.meta?.desktopOnly) return true
+  if (typeof window === 'undefined') return true
+  if (!window.matchMedia(APP_SHELL_TABLET_MQ).matches) return true
+
+  const toast = useToast()
+  toast.info('Игры пока только на компьютере')
+  return { name: 'home' }
+})
 
 export default router

@@ -43,6 +43,20 @@ const navGroups = [
     ],
   },
   {
+    id: 'games',
+    title: 'Игры',
+    illustration: NAV_ILLUSTRATIONS.games,
+    desktopOnly: true,
+    items: [
+      {
+        id: 'keyland',
+        label: 'Клавишленд',
+        illustration: NAV_ILLUSTRATIONS.keyland,
+        href: '/games/keyland',
+      },
+    ],
+  },
+  {
     id: 'shop',
     title: 'Магазин',
     illustration: NAV_ILLUSTRATIONS.market,
@@ -117,6 +131,10 @@ function saveSidebarState(state) {
 }
 
 const sidebarState = readSidebarState()
+
+const visibleNavGroups = computed(() =>
+  navGroups.filter((group) => !(group.desktopOnly && isDrawerMode.value)),
+)
 
 const collapsed = ref(sidebarState.collapsed)
 /** В drawer всегда полный список — без collapsed flyouts. */
@@ -394,7 +412,7 @@ function scheduleHideFlyout() {
         :aria-hidden="!effectiveCollapsed"
       >
         <div
-          v-for="group in navGroups"
+          v-for="group in visibleNavGroups"
           :key="`collapsed-${group.id}`"
           class="app-sidebar__section"
           @pointerenter="group.title ? showFlyout(group.id) : undefined"
@@ -490,7 +508,7 @@ function scheduleHideFlyout() {
         class="app-sidebar__nav-mode app-sidebar__nav-mode--expanded"
         :aria-hidden="effectiveCollapsed"
       >
-        <template v-for="group in navGroups" :key="`expanded-${group.id}`">
+        <template v-for="group in visibleNavGroups" :key="`expanded-${group.id}`">
           <div v-if="!group.title" class="app-sidebar__group">
             <component
               :is="isInternalHref(item.href) ? RouterLink : 'a'"
@@ -633,7 +651,12 @@ function scheduleHideFlyout() {
       overflow: visible;
     }
 
-    .app-sidebar__section-btn,
+    .app-sidebar__section-btn {
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+
     .app-sidebar__flyout-link,
     .app-sidebar__toggle,
     .app-sidebar__expand,
@@ -879,6 +902,12 @@ function scheduleHideFlyout() {
   &__nav-icon {
     flex-shrink: 0;
     pointer-events: none;
+    border-radius: $radius-sm;
+    overflow: hidden;
+
+    :deep(.base-icon__img) {
+      object-fit: cover;
+    }
   }
 
   &__flyout {
@@ -935,7 +964,7 @@ function scheduleHideFlyout() {
     gap: $space-1;
 
     &--collapsible {
-      gap: 0;
+      gap: $space-2;
     }
   }
 
@@ -984,6 +1013,7 @@ function scheduleHideFlyout() {
     display: flex;
     flex-direction: column;
     gap: $space-1;
+    padding-top: $space-1;
     padding-bottom: $space-2;
   }
 
@@ -1007,7 +1037,7 @@ function scheduleHideFlyout() {
     }
 
     &--nested {
-      padding-left: $space-5;
+      padding-left: $space-4;
     }
 
     &--active {

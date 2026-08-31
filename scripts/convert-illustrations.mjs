@@ -20,6 +20,7 @@ const CATEGORY_MAP = {
   market: 'market',
   nav: 'nav',
   journal: 'journal',
+  games: 'games',
 }
 
 function getPixel(data, x, y, width, channels) {
