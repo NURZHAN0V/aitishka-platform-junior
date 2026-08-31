@@ -36,6 +36,15 @@
   background-color: map.get($config, bg);
 }
 
+@mixin keyland-title-text {
+  font-family: $font-family-display;
+  font-weight: $font-weight-normal;
+  color: rgba(255, 246, 232, 0.9);
+  line-height: $line-height-tight;
+  letter-spacing: 0.015em;
+  text-shadow: 0 1px 10px rgba(10, 6, 32, 0.28);
+}
+
 @mixin banner-slogan-text {
   color: $banner-slogan-color;
   font-weight: 900;

@@ -203,6 +203,7 @@ $space-12: 48px;
 // --- Typography ---
 
 $font-family-base: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+$font-family-display: 'Marmelad', $font-family-base;
 $font-size-root: 112.5%; // 18px при стандартных настройках браузера (было 16px)
 $font-size-xs: 0.75rem;
 $font-size-sm: 0.875rem;

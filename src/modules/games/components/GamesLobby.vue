@@ -30,6 +30,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .games-lobby {
   display: flex;
@@ -77,7 +78,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 28% center;
+  object-position: 28% 38%;
   display: block;
   z-index: 0;
 }
@@ -112,11 +113,9 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 
 .games-lobby__title {
   margin: 0;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  color: $color-text-inverse;
-  text-shadow: 0 1px 6px rgba(10, 6, 32, 0.5);
-  line-height: $line-height-tight;
+  font-size: calc($font-size-sm * 1.75);
+  @include keyland-title-text;
+  text-wrap: balance;
 }
 
 .games-lobby__play {

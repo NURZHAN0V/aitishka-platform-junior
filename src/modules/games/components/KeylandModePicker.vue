@@ -25,7 +25,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
       />
       <div class="keyland-modes__hero-scrim" aria-hidden="true" />
       <header class="keyland-modes__head">
-        <p class="keyland-modes__eyebrow">Клавишленд</p>
+        <h1 class="keyland-modes__title">Клавишленд</h1>
       </header>
     </div>
 
@@ -46,6 +46,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
 
 <style lang="scss" scoped>
 @use '@/assets/styles/tokens' as *;
+@use '@/assets/styles/mixins' as *;
 
 .keyland-modes {
   display: flex;
@@ -60,9 +61,9 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   justify-content: flex-end;
   overflow: hidden;
   border-radius: $radius-lg;
-  aspect-ratio: 21 / 9;
-  min-height: 120px;
-  max-height: 240px;
+  aspect-ratio: 21 / 8;
+  min-height: 150px;
+  max-height: 280px;
   background: #1a1240;
   isolation: isolate;
 }
@@ -75,7 +76,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 28% center;
+  object-position: 28% 38%;
 }
 
 .keyland-modes__hero-scrim {
@@ -100,13 +101,10 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   text-align: right;
 }
 
-.keyland-modes__eyebrow {
+.keyland-modes__title {
   margin: 0;
-  font-size: calc($font-size-sm * 2.5);
-  font-weight: $font-weight-semibold;
-  color: #c4b5fd;
-  line-height: $line-height-tight;
-  text-shadow: 0 1px 4px rgba(10, 6, 32, 0.45);
+  font-size: calc($font-size-sm * 2.25);
+  @include keyland-title-text;
 }
 
 .keyland-modes__grid {
