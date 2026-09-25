@@ -18,8 +18,8 @@ const props = defineProps({
 })
 
 const progressItems = computed(() => [
-  { label: 'Оценки', percent: props.gradesPercent },
-  { label: 'ДЗ вовремя', percent: props.homeworkPercent },
+  { label: 'ДЗ сдано', percent: props.gradesPercent },
+  { label: 'Экзамены', percent: props.homeworkPercent },
 ])
 
 const visibleLeaderboard = computed(() =>
@@ -113,7 +113,9 @@ const visibleLeaderboard = computed(() =>
   border-radius: $radius-card;
   background: linear-gradient(145deg, #7c3aed 0%, #6366f1 55%, #8b5cf6 100%);
   color: $color-text-inverse;
-  box-shadow: $shadow-md;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+
 
   &__header {
     display: flex;

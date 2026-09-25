@@ -1,7 +1,6 @@
 <script setup>
 import AppLayout from '@/core/layouts/AppLayout.vue'
 import { useRating } from '@/modules/rating/composables/useRating.js'
-import RatingToolbar from '@/modules/rating/components/RatingToolbar.vue'
 import RatingTable from '@/modules/rating/components/RatingTable.vue'
 
 const mockUser = {
@@ -10,7 +9,7 @@ const mockUser = {
   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alina',
 }
 
-const { rankedStudents, formulaTooltip } = useRating()
+const { rankGroups } = useRating()
 </script>
 
 <template>
@@ -21,9 +20,7 @@ const { rankedStudents, formulaTooltip } = useRating()
     active-route="rating"
   >
     <div class="rating-view">
-      <RatingToolbar :formula-tooltip="formulaTooltip" />
-
-      <RatingTable :rows="rankedStudents" />
+      <RatingTable :groups="rankGroups" />
     </div>
   </AppLayout>
 </template>
