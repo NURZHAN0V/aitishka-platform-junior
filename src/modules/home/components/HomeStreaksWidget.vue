@@ -103,7 +103,9 @@ const streakItems = computed(() => [
   border-radius: $radius-card;
   background: $gradient-widget-streaks;
   color: $color-text-inverse;
-  box-shadow: $shadow-md;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+
   overflow: visible;
 
   &__header {

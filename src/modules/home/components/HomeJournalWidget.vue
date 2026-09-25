@@ -106,7 +106,8 @@ function gradeIllustration(grade) {
   padding: $space-4;
   border-radius: $radius-card;
   background: $gradient-widget-journal;
-  box-shadow: $shadow-md;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
 
   &__header {
     flex-shrink: 0;
@@ -129,9 +130,10 @@ function gradeIllustration(grade) {
     flex: 1;
     min-height: 0;
     padding: $space-2 $space-3;
+    border: 1px solid $color-border-light;
     border-radius: $radius-lg;
     background-color: $color-bg-card;
-    box-shadow: $shadow-sm;
+    box-shadow: none;
   }
 
   &__list {

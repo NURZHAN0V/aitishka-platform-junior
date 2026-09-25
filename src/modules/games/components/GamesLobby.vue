@@ -130,7 +130,7 @@ const coverSrc = getAvifIcon(GAMES_ILLUSTRATIONS.keylandCover)
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   line-height: $line-height-tight;
-  box-shadow: $shadow-sm;
+
 }
 
 @media (max-width: 640px) {

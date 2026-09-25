@@ -62,7 +62,9 @@ defineProps({
   border-radius: $radius-card;
   background: $gradient-widget-homework;
   color: $color-text-inverse;
-  box-shadow: $shadow-md;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
+
   overflow: hidden;
 
   &__header {

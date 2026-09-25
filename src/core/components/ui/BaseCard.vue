@@ -57,7 +57,8 @@ defineProps({
   &--gradient-purple {
     background: $gradient-primary;
     color: $color-text-inverse;
-    box-shadow: $shadow-md;
+    border-color: transparent;
+    box-shadow: none;
 
     .base-card__title,
     .base-card__body {
@@ -72,7 +73,8 @@ defineProps({
   &--gradient-green {
     background: $gradient-green;
     color: $color-text-inverse;
-    box-shadow: $shadow-md;
+    border-color: transparent;
+    box-shadow: none;
 
     .base-card__title,
     .base-card__body {
@@ -87,7 +89,8 @@ defineProps({
   &--gradient-orange {
     background: $gradient-orange;
     color: $color-text-inverse;
-    box-shadow: $shadow-md;
+    border-color: transparent;
+    box-shadow: none;
 
     .base-card__title,
     .base-card__body {
@@ -102,7 +105,8 @@ defineProps({
   &--gradient-blue {
     background: $gradient-blue;
     color: $color-text-inverse;
-    box-shadow: $shadow-md;
+    border-color: transparent;
+    box-shadow: none;
 
     .base-card__title,
     .base-card__body {

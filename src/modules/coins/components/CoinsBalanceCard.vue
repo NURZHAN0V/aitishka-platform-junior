@@ -52,7 +52,9 @@ defineProps({
   border-radius: $radius-card;
   background: $gradient-coin;
   color: $color-text-primary;
-  box-shadow: $shadow-md;
+  border: 1px solid rgba(253, 230, 138, 0.9);
+  box-shadow: none;
+
   overflow: visible;
 
   &__glow {
@@ -130,7 +132,7 @@ defineProps({
     font-size: $font-size-base;
     font-weight: $font-weight-bold;
     text-decoration: none;
-    box-shadow: $shadow-sm;
+
     transition: background-color $transition-fast;
     @include no-select;
 

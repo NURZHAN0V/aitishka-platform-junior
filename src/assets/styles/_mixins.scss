@@ -25,8 +25,9 @@
 
 @mixin card-surface {
   background-color: $color-bg-card;
+  border: 1px solid $color-border-light;
   border-radius: $radius-card;
-  box-shadow: $shadow-card;
+  box-shadow: none;
 }
 
 @mixin homework-status-chip($status) {

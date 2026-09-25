@@ -131,8 +131,10 @@ watch(
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
+    border: 1px solid $color-border-light;
     border-radius: $radius-2xl;
     background-color: $color-bg-card;
+    box-shadow: none;
   }
 
   &__content {

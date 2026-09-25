@@ -54,7 +54,8 @@ defineProps({
   padding: $space-4;
   border-radius: $radius-card;
   background-color: $gradient-widget-grades;
-  box-shadow: $shadow-sm;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: none;
 
   &__header {
     flex-shrink: 0;
@@ -79,9 +80,10 @@ defineProps({
     align-items: stretch;
     min-height: 0;
     padding: $space-3 $space-4;
+    border: 1px solid $color-border-light;
     border-radius: $radius-lg;
     background-color: $color-bg-card;
-    box-shadow: $shadow-sm;
+    box-shadow: none;
 
     @include media-phone {
       grid-template-columns: 1fr;

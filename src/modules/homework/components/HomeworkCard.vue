@@ -136,8 +136,8 @@ function onReupload() {
   overflow: hidden;
   min-width: 0;
   border: 1px solid $color-border-light;
-  box-shadow: $shadow-sm;
-  transition: box-shadow $transition-base, border-color $transition-base;
+
+  transition: border-color $transition-base;
 
   &:hover {
     border-color: $color-primary-muted;

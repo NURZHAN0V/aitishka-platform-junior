@@ -77,18 +77,17 @@ function gradeVariant(grade) {
   padding: $space-3 $space-4;
   border-radius: $radius-card;
   background-color: $color-bg-card;
-  box-shadow: $shadow-sm;
+
   text-decoration: none;
   color: inherit;
-  border: 1px solid transparent;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid $color-border-light;
+  transition: border-color 0.15s ease;
 
   &--link {
     cursor: pointer;
 
     &:hover {
       border-color: $color-border;
-      box-shadow: $shadow-md;
     }
 
     &:focus-visible {

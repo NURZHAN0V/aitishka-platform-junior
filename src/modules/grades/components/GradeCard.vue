@@ -127,20 +127,19 @@ function onToggle() {
   overflow: hidden;
   min-width: 0;
   border: 1px solid $color-border-light;
-  box-shadow: $shadow-sm;
-  transition: box-shadow $transition-base, border-color $transition-base;
+
+  transition: border-color $transition-base;
 
   &:hover {
     border-color: $color-primary-muted;
   }
 
   &--expanded {
-    box-shadow: $shadow-card;
     border-color: $color-primary-muted;
   }
 
   &--special {
-    box-shadow: $shadow-sm, 0 0 0 1px rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.35);
   }
 
   &__summary {

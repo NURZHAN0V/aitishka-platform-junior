@@ -56,7 +56,7 @@ const illustration = computed(() => useSubjectIllustration(props.review.subject)
   padding: $space-4;
   min-width: 0;
   border: 1px solid $color-border-light;
-  box-shadow: $shadow-sm;
+
 
   &__header {
     display: flex;

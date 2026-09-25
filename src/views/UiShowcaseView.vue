@@ -654,7 +654,7 @@ async function confirmDanger() {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    box-shadow: $shadow-sm;
+
   }
 
   &__swatch-name {

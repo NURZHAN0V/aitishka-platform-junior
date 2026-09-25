@@ -66,12 +66,12 @@ const emit = defineEmits(['buy'])
   border-radius: $radius-card;
   background-color: $color-bg-card;
   border: 1px solid $color-border-light;
-  box-shadow: $shadow-sm;
+
   overflow: hidden;
-  transition: box-shadow $transition-base, transform $transition-base;
+  transition: transform $transition-base, border-color $transition-base;
 
   &:hover:not(.market-card--disabled) {
-    box-shadow: $shadow-md;
+    border-color: $color-primary-muted;
     transform: translateY(-2px);
   }
 

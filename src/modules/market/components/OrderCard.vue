@@ -62,7 +62,7 @@ defineProps({
   border-radius: $radius-card;
   background-color: $color-bg-card;
   border: 1px solid $color-border-light;
-  box-shadow: $shadow-sm;
+
 
   &__media {
     @include flex-center;
